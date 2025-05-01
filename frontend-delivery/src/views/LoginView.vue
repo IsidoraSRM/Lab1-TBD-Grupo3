@@ -1,10 +1,11 @@
 <template>
   <div class="login-container">
     <div class="login-card">
-      <h2>Iniciar Sesión</h2>
+      <h2>{{ isLogin ? 'Iniciar Sesión' : 'Registro' }}</h2>
       <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
       
-      <form @submit.prevent="loginUser">
+      <!-- Formulario de login -->
+      <form @submit.prevent="loginUser" v-if="isLogin">
         <div class="form-group">
           <label for="email">Correo Electrónico</label>
           <input 
@@ -30,12 +31,98 @@
         <button type="submit" class="login-button" :disabled="loading">
           {{ loading ? 'Cargando...' : 'Iniciar Sesión' }}
         </button>
+        
+        <div class="register-link">
+          ¿No tienes una cuenta? 
+          <a href="#" @click.prevent="toggleForm">Regístrate</a>
+        </div>
       </form>
+      
+      <!-- Formulario de registro -->
+      <form @submit.prevent="registerUser" v-else>
+        <div class="form-group">
+          <label for="register-rut">RUT</label>
+          <input 
+            type="text" 
+            id="register-rut" 
+            v-model="registerData.rut" 
+            placeholder="Ingrese su RUT" 
+            required
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="register-name">Nombre Completo</label>
+          <input 
+            type="text" 
+            id="register-name" 
+            v-model="registerData.nameParam" 
+            placeholder="Ingrese su nombre completo" 
+            required
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="register-email">Correo Electrónico</label>
+          <input 
+            type="email" 
+            id="register-email" 
+            v-model="registerData.email" 
+            placeholder="Ingrese su correo" 
+            required
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="register-phone">Teléfono</label>
+          <input 
+            type="tel" 
+            id="register-phone" 
+            v-model="registerData.phone" 
+            placeholder="Ingrese su teléfono" 
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="register-birthdate">Fecha de nacimiento</label>
+          <input 
+            type="date" 
+            id="register-birthdate" 
+            v-model="registerData.birthdate" 
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="register-password">Contraseña</label>
+          <input 
+            type="password" 
+            id="register-password" 
+            v-model="registerData.password" 
+            placeholder="Ingrese su contraseña" 
+            required
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="register-confirm">Confirmar Contraseña</label>
+          <input 
+            type="password" 
+            id="register-confirm" 
+            v-model="passwordConfirmation" 
+            placeholder="Confirme su contraseña" 
+            required
+          />
+        </div>
 
-      <div class="register-link">
-        ¿No tienes una cuenta? 
-        <a href="#" @click.prevent="goToRegister">Regístrate</a>
-      </div>
+        <button type="submit" class="login-button" :disabled="loading">
+          {{ loading ? 'Registrando...' : 'Registrarse' }}
+        </button>
+        
+        <div class="register-link">
+          ¿Ya tienes una cuenta? 
+          <a href="#" @click.prevent="toggleForm">Inicia sesión</a>
+        </div>
+      </form>
     </div>
   </div>
 </template>
@@ -47,10 +134,20 @@ export default {
   name: 'LoginView',
   data() {
     return {
+      isLogin: true,
       credentials: {
         email: '',
         password: ''
       },
+      registerData: {
+        rut: '',
+        nameParam: '',
+        email: '',
+        phone: '',
+        birthdate: '',
+        password: ''
+      },
+      passwordConfirmation: '',
       loading: false,
       errorMessage: ''
     }
@@ -82,6 +179,46 @@ export default {
       }
     },
     
+    async registerUser() {
+      if (this.registerData.password !== this.passwordConfirmation) {
+        this.errorMessage = 'Las contraseñas no coinciden';
+        return;
+      }
+      
+      this.loading = true;
+      this.errorMessage = '';
+      
+      try {
+        // Asegurar que solo se registra como CLIENTE
+        const userData = {
+          ...this.registerData,
+          role: 'CLIENTE' // Forzar rol CLIENTE
+        };
+        
+        // Eliminar la asignación a 'response' si no la usas
+        await axios.post(
+          process.env.VUE_APP_API_URL + 'auth/register',
+          userData
+        );
+        
+        // Mostrar mensaje de éxito y cambiar a la pantalla de login
+        alert('Registro exitoso. Por favor inicie sesión.');
+        this.clearRegisterForm();
+        this.isLogin = true;
+        
+      } catch (error) {
+        console.error('Error de registro:', error);
+        this.errorMessage = error.response?.data?.message || 
+                           'Error al registrar. Verifique los datos ingresados.';
+        
+        if (error.response?.status === 409) {
+          this.errorMessage = 'Este correo ya está registrado';
+        }
+      } finally {
+        this.loading = false;
+      }
+    },
+    
     redirectBasedOnRole(role) {
       // Aquí puedes personalizar la redirección según los roles
       if (role === 'ADMIN') {
@@ -94,10 +231,21 @@ export default {
       }
     },
     
-    goToRegister() {
-      // Implementar si tienes una página de registro
-      alert('Funcionalidad de registro pendiente');
-      // this.$router.push('/register');
+    toggleForm() {
+      this.isLogin = !this.isLogin;
+      this.errorMessage = '';
+    },
+    
+    clearRegisterForm() {
+      this.registerData = {
+        rut: '',
+        nameParam: '',
+        email: '',
+        phone: '',
+        birthdate: '',
+        password: ''
+      };
+      this.passwordConfirmation = '';
     }
   }
 }
@@ -175,7 +323,7 @@ input:focus {
 .login-button {
   width: 100%;
   padding: 12px;
-  background: #D17600;
+  background: #B55529 ;
   color: white;
   border: none;
   border-radius: 4px;
@@ -184,7 +332,7 @@ input:focus {
 }
 
 .login-button:hover {
-  background: #F5C448;
+  background: #D17600;
 }
 
 .login-button:disabled {

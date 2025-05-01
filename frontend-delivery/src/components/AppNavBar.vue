@@ -2,6 +2,7 @@
 import { authService } from '../services/authService';
 
 export default {
+    name: 'NavBar',
     data() {
         return {
             menuOpen: false,
@@ -32,7 +33,10 @@ export default {
 
 <template>
     <nav>
-        <router-link to="/" class="title">DocDelivery</router-link>
+        <router-link to="/" class="title" img="DocDelivery.png">
+            <img src="@/assets/DocDelivery.png" alt="Logo" class="nav-logo">
+            DocDelivery
+        </router-link>
         <div class="menu" @click="toggleMenu">
             <span></span>
             <span></span>
@@ -78,8 +82,11 @@ nav {
     justify-content: space-between ;
     align-items: center;
     background-color: #125A6C;
-    position: sticky;  /* no se mueve el navbar con scroll*/
+    position: fixed;  /* no se mueve el navbar con scroll*/
     top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -89,6 +96,16 @@ nav .title {
     font-weight: bolder;
     text-decoration: none;
     color: #E2DCD2;
+    display: flex;
+    align-items: center;
+}
+
+.nav-logo {
+    height: 30px; /* Ajusta el tamaño según lo necesites */
+    width: auto;
+    margin-right: 8px; /* Espacio entre el logo y el texto */
+    vertical-align: middle; /* Alinea verticalmente con el texto */
+    
 }
 
 nav ul {
@@ -111,7 +128,7 @@ nav ul li a {
 }
  /* el link que esta selecionado no cambiara de color si se pasa el mouse por encima*/
 nav ul li a:not(.active):hover {
-    background-color: #D17600;
+    background-color: #B55529 ;
 }
 
 nav .menu {
