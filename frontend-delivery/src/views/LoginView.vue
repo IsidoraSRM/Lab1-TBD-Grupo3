@@ -104,6 +104,16 @@ export default {
 </script>
 
 <style scoped>
+
+/*
+colores:
+- Naranjo quemado (rgb(209, 118, 0))  #D17600 → Botones y CTAs
+- Mostaza (rgb(245, 196, 72))   #F5C448 → Secciones destacadas
+- Terracota (rgb(181, 85, 41)) #B55529  → Contrastes elegantes
+- Gris cálido (rgb(226, 220, 210)) #E2DCD2  → Fondos
+- Azul petróleo (rgb(18, 90, 108)) 	#125A6C  → Detalles y profundidad
+*/
+
 .login-container {
   display: flex;
   justify-content: center;
@@ -116,12 +126,14 @@ export default {
   background: #ffffff;
   padding: 30px;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(18, 90, 108, 0.13);
   width: 100%;
   max-width: 400px;
 }
 
 h2 {
+  font-weight: bold;
+  font-size: 30px;
   text-align: center;
   margin-bottom: 24px;
   color: #125A6C;
@@ -129,13 +141,21 @@ h2 {
 
 .form-group {
   margin-bottom: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
+
 
 label {
   display: block;
   margin-bottom: 6px;
   font-weight: bold;
   color: #555;
+  font-size: 16px;
+  align-self: flex-start;
 }
 
 input {
@@ -164,7 +184,7 @@ input:focus {
 }
 
 .login-button:hover {
-  background: #B55529;
+  background: #F5C448;
 }
 
 .login-button:disabled {

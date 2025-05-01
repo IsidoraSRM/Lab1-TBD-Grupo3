@@ -13,6 +13,17 @@
   </script>
   
   <style scoped>
+
+/*
+colores:
+- Naranjo quemado (rgb(209, 118, 0))  #D17600 → Botones y CTAs
+- Mostaza (rgb(245, 196, 72))   #F5C448 → Secciones destacadas
+- Terracota (rgb(181, 85, 41)) #B55529  → Contrastes elegantes
+- Gris cálido (rgb(226, 220, 210)) #E2DCD2  → Fondos
+- Azul petróleo (rgb(18, 90, 108)) 	#125A6C  → Detalles y profundidad
+*/
+
+
   .trabajador-container {
     padding: 20px;
   }
