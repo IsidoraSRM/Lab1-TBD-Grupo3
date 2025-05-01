@@ -1,18 +1,34 @@
 <script>
+import { authService } from '../services/authService';
+
 export default {
     data() {
         return {
-            menuOpen: false
+            menuOpen: false,
+            isLoggedIn: false,
+            userRole: ''
         }
+    },
+    created() {
+        this.checkAuthStatus();
     },
     methods: {
         toggleMenu() {
             this.menuOpen = !this.menuOpen;
+        },
+        checkAuthStatus() {
+            this.isLoggedIn = authService.isAuthenticated();
+            this.userRole = authService.getUserRole();
+        },
+        logout() {
+            authService.logout();
+            this.isLoggedIn = false;
+            this.userRole = '';
+            this.$router.push('/login');
         }
     }
 }
 </script>
-
 
 <template>
     <nav>
@@ -24,12 +40,20 @@ export default {
         </div>
         <ul :class="{ open: menuOpen }">
             <li>
-                <router-link to="/Home">Inicio</router-link>
+                <router-link to="/">Inicio</router-link>
             </li>
-            <li>
-                <router-link to="/login">Log in</router-link>
+            <li v-if="!isLoggedIn">
+                <router-link to="/login">Iniciar Sesión</router-link>
             </li>
-            
+            <li v-if="isLoggedIn && userRole === 'ADMIN'">
+                <router-link to="/admin">Panel Admin</router-link>
+            </li>
+            <li v-if="isLoggedIn && userRole === 'TRABAJADOR'">
+                <router-link to="/trabajador">Panel Trabajador</router-link>
+            </li>
+            <li v-if="isLoggedIn">
+                <a href="#" @click.prevent="logout">Cerrar Sesión</a>
+            </li>
         </ul>
     </nav>
 </template>
@@ -42,12 +66,12 @@ export default {
     background-color: #A3D9A5;
 }
 /*
-#F4F5F5 blanco
-#77B8B9 celeste
-#CA5833 rojo
-#C98F51 naranja
-#3A3A4B gris oscuro
-
+colores:
+- Naranjo quemado (rgb(209, 118, 0)) → Botones y CTAs
+- Mostaza (rgb(245, 196, 72)) → Secciones destacadas
+- Terracota (rgb(181, 85, 41)) → Contrastes elegantes
+- Gris cálido (rgb(226, 220, 210)) → Fondos
+- Azul petróleo (rgb(18, 90, 108)) → Detalles y profundidad
 */
 nav {
     display: flex;
