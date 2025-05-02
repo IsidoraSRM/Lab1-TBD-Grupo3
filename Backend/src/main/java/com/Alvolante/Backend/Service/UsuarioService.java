@@ -19,7 +19,7 @@ public class UsuarioService {
             throw new RuntimeException("El correo " + email + " ya está registrado. Usa uno diferente.");
         }
 
-        UsuarioEntity user = new UsuarioEntity(rut, name, email, phone, fechaDeNacimiento, password, rol);
+        UsuarioEntity user = new UsuarioEntity(0, rut, name, email, phone, fechaDeNacimiento, password, rol);
         userRepo.save(user); // Guardar el usuario en la base de datos
         return user;
     }

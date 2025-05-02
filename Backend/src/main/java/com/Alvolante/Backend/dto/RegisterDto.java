@@ -1,10 +1,12 @@
 package com.Alvolante.Backend.dto;
 
-import lombok.Data;
+import lombok.*;
 
 import java.util.Date;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RegisterDto {
     private String rut;
     private String nameParam;

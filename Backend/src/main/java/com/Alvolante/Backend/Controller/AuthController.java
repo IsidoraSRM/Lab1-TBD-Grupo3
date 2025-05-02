@@ -104,14 +104,16 @@ public class AuthController {
             String hashedPassword = passwordEncoder.encode(registerDto.getPassword());
 
             UsuarioEntity newUser = new UsuarioEntity(
+                    0,
                     registerDto.getRut(),
                     registerDto.getNameParam(),
                     registerDto.getEmail(),
                     registerDto.getPhone(),
                     registerDto.getBirthdate(),
                     hashedPassword,
-                    rol
+                    registerDto.getRole()
             );
+
 
             usuarioRepository.save(newUser);
             return ResponseEntity.status(HttpStatus.CREATED)
