@@ -12,7 +12,11 @@ import com.Alvolante.Backend.Config.JwtUtil;
 import com.Alvolante.Backend.dto.RegisterDto;
 import com.Alvolante.Backend.dto.LoginDto;
 import com.Alvolante.Backend.Repository.UsuarioRepository;
+import com.Alvolante.Backend.Repository.ClienteRepository;
+import com.Alvolante.Backend.Repository.RepartidorRepository;
 import com.Alvolante.Backend.Entity.UsuarioEntity;
+import com.Alvolante.Backend.Entity.ClienteEntity;
+import com.Alvolante.Backend.Entity.RepartidorEntity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,23 +30,31 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final UsuarioRepository usuarioRepository;
+    private final ClienteRepository clienteRepository;
+    private final RepartidorRepository repartidorRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(
+            AuthenticationManager authenticationManager,
+            JwtUtil jwtUtil,
+            UsuarioRepository usuarioRepository,
+            ClienteRepository clienteRepository,
+            RepartidorRepository repartidorRepository,
+            PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.usuarioRepository = usuarioRepository;
+        this.clienteRepository = clienteRepository;
+        this.repartidorRepository = repartidorRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Realizar login del usuario
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
         System.out.println("Datos recibidos en el back: " + loginDto);
 
         try {
-            // Buscar usuario usando Optional
             Optional<UsuarioEntity> optionalUser = usuarioRepository.findByEmail(loginDto.getEmail());
 
             if (optionalUser.isEmpty()) {
@@ -53,7 +65,6 @@ public class AuthController {
 
             UsuarioEntity user = optionalUser.get();
 
-            // Autenticación con Spring Security
             UsernamePasswordAuthenticationToken loginToken = new UsernamePasswordAuthenticationToken(
                     loginDto.getEmail(),
                     loginDto.getPassword()
@@ -68,10 +79,8 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas.");
             }
 
-            // Generar JWT si autenticación es exitosa
             String jwt = jwtUtil.createToken(loginDto.getEmail());
 
-            // Construir respuesta con el token y datos del usuario
             Map<String, Object> response = new HashMap<>();
             response.put("token", jwt);
             response.put("userId", user.getIdUsuario());
@@ -90,10 +99,8 @@ public class AuthController {
         }
     }
 
-    // Registrar usuario
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterDto registerDto) {
-        // Verificar si el usuario ya existe
         Optional<UsuarioEntity> foundUser = usuarioRepository.findByEmail(registerDto.getEmail());
         if (foundUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("El correo ya está registrado.");
@@ -111,13 +118,21 @@ public class AuthController {
                     registerDto.getPhone(),
                     registerDto.getBirthdate(),
                     hashedPassword,
-                    registerDto.getRole()
+                    rol
             );
 
-
             usuarioRepository.save(newUser);
+
+            if ("CLIENTE".equalsIgnoreCase(rol)) {
+                ClienteEntity cliente = new ClienteEntity(0L, registerDto.getNameParam(), "Sin dirección", registerDto.getEmail(), registerDto.getPhone());
+                clienteRepository.save(cliente);
+            } else if ("TRABAJADOR".equalsIgnoreCase(rol)) {
+                RepartidorEntity repartidor = new RepartidorEntity(0L, registerDto.getNameParam(), registerDto.getPhone(), true);
+                repartidorRepository.save(repartidor);
+            }
+
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body("Usuario registrado con éxito.");
+                    .body("Usuario registrado con éxito en la tabla correspondiente.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error interno en el servidor.");
