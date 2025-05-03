@@ -9,11 +9,11 @@
         <version>3.1.5</version> <!-- Ajustado a la versión que usas -->
     </parent>
 
-    <groupId>com.Alvolante</groupId>
+    <groupId>com.Docdelivery</groupId>
     <artifactId>Backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Backend</name>
-    <description>Proyecto para una aplicación web para arriendo de autos</description>
+    <description>Proyecto de un servicio de delivery de documentos</description>
 
     <properties>
         <java.version>17</java.version> <!-- Requerido para Spring Boot 3+ -->
