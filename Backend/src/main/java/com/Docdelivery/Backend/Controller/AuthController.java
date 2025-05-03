@@ -79,7 +79,7 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas.");
             }
 
-            String jwt = jwtUtil.createToken(loginDto.getEmail());
+            String jwt = jwtUtil.createToken(loginDto.getEmail(), user.getRole());
 
             Map<String, Object> response = new HashMap<>();
             response.put("token", jwt);

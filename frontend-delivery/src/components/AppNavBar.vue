@@ -55,6 +55,9 @@ export default {
             <li v-if="isLoggedIn && userRole === 'TRABAJADOR'">
                 <router-link to="/trabajador">Panel Trabajador</router-link>
             </li>
+            <li v-if="isLoggedIn && userRole === 'CLIENTE'">
+                <router-link to="/client">Pedidos</router-link>
+            </li>
             <li v-if="isLoggedIn">
                 <a href="#" @click.prevent="logout">Cerrar Sesión</a>
             </li>

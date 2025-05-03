@@ -30,6 +30,15 @@ const routes = [
     }
   },
   {
+    path: '/client',
+    name: 'Client',
+    component: () => import('./views/ClienteView.vue'),  // Necesitarías crear este componente
+    meta: { 
+      requiresAuth: true,
+      role: 'CLIENTE'
+    }
+  },
+  {
     path: '/trabajador',
     name: 'Trabajador',
     component: () => import('./views/TrabajadorView.vue'),  // Necesitarías crear este componente

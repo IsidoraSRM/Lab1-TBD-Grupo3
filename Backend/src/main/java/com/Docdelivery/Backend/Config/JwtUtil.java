@@ -17,7 +17,7 @@ public class JwtUtil {
     private static final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET_KEY);
 
     // Método para crear un JWT
-    public String createToken(String email) {
+    public String createToken(String email, String role) {
         System.out.println("En la funcin creatoToken para crear el token.");
         try{
             return JWT.create()
@@ -25,6 +25,7 @@ public class JwtUtil {
                     .withIssuer("tbd")// es para ver quien emitio el token, to be defined
                     .withIssuedAt(new Date())
                     .withExpiresAt(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(666))) // Duración del token
+                    .withClaim("role", role) 
                     .sign(ALGORITHM);
         } catch (Exception e) {
             System.out.println("Error al generar el token JWT: " + e.getMessage());
