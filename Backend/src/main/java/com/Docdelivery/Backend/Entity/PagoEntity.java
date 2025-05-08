@@ -10,11 +10,11 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PagoEntity {
-	Long idPago;
-	// P oneToOne P(O)
-	Long idPedido;
+	private Long idPago;
+		// P oneToOne P(O)
+	private Long idPedido;
 	// MP oneToOne P
-	Long idMedioDePago;
-	BigDecimal monto;
+	private Long idMedioDePago;
+	private BigDecimal monto;
 
 }

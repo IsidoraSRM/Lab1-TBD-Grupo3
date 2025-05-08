@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class ClienteRepository {
+public class  ClienteRepository {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

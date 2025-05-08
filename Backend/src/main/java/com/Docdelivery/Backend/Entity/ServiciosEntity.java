@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+//servicio ============ producto
 public class ServiciosEntity {
     private Long idServicio;
     // S manyToOne E
@@ -14,5 +15,5 @@ public class ServiciosEntity {
     private String nombreServicio;
     private String descripcionServicio;
     private Integer precioServicio;
-    private String CatergoriaServicio;
+    private String catergoriaServicio;
 }

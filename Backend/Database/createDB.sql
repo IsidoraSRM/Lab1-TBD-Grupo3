@@ -25,9 +25,17 @@ CREATE TABLE repartidor (
     disponible BOOLEAN DEFAULT TRUE
 );
 
+CREATE TABLE EmpresaAsociada (
+    idEmpresaAsociada SERIAL PRIMARY KEY,
+    nombreEmpresa VARCHAR(255),
+    direccionEmpresa VARCHAR(255),
+    tipoServicio VARCHAR(100)
+);
+
 CREATE TABLE OrderEntity (
     idPedido SERIAL PRIMARY KEY,
     cliente_id INT REFERENCES Cliente(cliente_id) ON DELETE CASCADE,
+	idEmpresaAsociada INT REFERENCES EmpresaAsociada(idEmpresaAsociada),
     repartidor_id INT REFERENCES Repartidor(repartidor_id),
     fechaPedido TIMESTAMP,
     estadoPedido VARCHAR(50),
@@ -41,12 +49,6 @@ CREATE TABLE DetallePedido (
     cantidad INT
 );
 
-CREATE TABLE EmpresaAsociada (
-    idEmpresaAsociada SERIAL PRIMARY KEY,
-    nombreEmpresa VARCHAR(255),
-    direccionEmpresa VARCHAR(255),
-    tipoServicio VARCHAR(100)
-);
 
 CREATE TABLE Servicios (
     idServicio SERIAL PRIMARY KEY,
@@ -75,4 +77,3 @@ CREATE TABLE Rating (
     score INT CHECK (score BETWEEN 1 AND 5),
     comment TEXT
 );
-
