@@ -14,6 +14,7 @@ public class OrderEntity {
     // R one to many P
     private Long repartidorId;
     private LocalDateTime fechaPedido;
+    private LocalDateTime fechaEntrega;
     private String estadoPedido;
     private String prioridadPedido;
 }
