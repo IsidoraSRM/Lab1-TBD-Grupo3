@@ -1,3 +1,14 @@
+--10
+CREATE OR REPLACE FUNCTION set_fecha_entrega()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.estadoPedido = 'Entregado' AND OLD.estadoPedido IS DISTINCT FROM 'Entregado' THEN
+        NEW.fechaEntrega := NOW();
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 -- 11
 
 CREATE OR REPLACE FUNCTION notificar_problema_critico()

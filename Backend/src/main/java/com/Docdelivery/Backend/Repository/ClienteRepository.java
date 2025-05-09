@@ -53,4 +53,35 @@ public class  ClienteRepository {
         String sql = "SELECT * FROM cliente";
         return jdbcTemplate.query(sql, new ClienteRowMapper());
     }
+
+    //consulta numero 1
+    public Optional<ClienteEntity> obtenerClienteQueMasHaGastado() {
+        String sql = """ 
+        SELECT 
+            c.cliente_id,
+            c.nombre,
+            c.email,
+            SUM(p.monto) AS total_gastado
+        FROM OrderEntity o
+        JOIN Pago p ON o.idPedido = p.idPedido
+        JOIN Cliente c ON o.cliente_id = c.cliente_id
+        WHERE o.estadoPedido = 'Entregado'
+        GROUP BY c.cliente_id, c.nombre, c.email
+        ORDER BY total_gastado DESC
+        LIMIT 1
+        """;
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new ClienteEntity(
+                    rs.getLong("cliente_id"),
+                    rs.getString("nombre"),
+                    rs.getString("direccion"),
+                    rs.getString("email"),
+                    rs.getString("telefono")
+            )));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
 }
