@@ -87,5 +87,16 @@ public class OrderController {
         return ResponseEntity.notFound().build();
     }
 
+    //Procedure registerOrder
+    @PostMapping("/register")
+    @Secured({"ROLE_CLIENTE", "ROLE_ADMIN"})
+    public int registerOrder(
+            @RequestParam int clienteId,
+            @RequestParam int empresaId,
+            @RequestParam String prioridad
+    ) {
+        return orderService.registerOrder(clienteId, empresaId, prioridad);
+    }
+
 
 }

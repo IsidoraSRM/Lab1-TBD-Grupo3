@@ -38,6 +38,7 @@ CREATE TABLE OrderEntity (
 	idEmpresaAsociada INT REFERENCES EmpresaAsociada(idEmpresaAsociada),
     repartidor_id INT REFERENCES Repartidor(repartidor_id),
     fechaPedido TIMESTAMP,
+    fechaEntrega TIMESTAMP,
     estadoPedido VARCHAR(50),
     prioridadPedido VARCHAR(50)
 );

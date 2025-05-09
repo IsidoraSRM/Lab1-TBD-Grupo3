@@ -55,6 +55,12 @@ public class OrderService {
         return detallePedidoRepository.findByPedidoId(idPedido);
     }
 
+    //Procedure registerOrder
+    public int registerOrder(int clienteId, int empresaId, String prioridad) {
+        return orderRepository.registerOrder(clienteId, empresaId, prioridad);
+    }
+
+
     
     
 }

@@ -2,15 +2,24 @@ package com.Docdelivery.Backend.Repository;
 
 import com.Docdelivery.Backend.Entity.OrderEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.CallableStatementCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -83,5 +92,36 @@ public class OrderRepository {
         return jdbcTemplate.query(sql, new OrderRowMapper());
     }
 
-
+    //Procedure registerOrder
+    public int registerOrder(int clienteId, int empresaId, String prioridad) {
+        String query = "CALL register_order(?,?,?,?)";
+        
+        try {
+            return jdbcTemplate.execute(
+                query,
+                (CallableStatementCallback<Integer>) cs -> {
+                    // Configurar parámetros de entrada
+                    cs.setInt(1, clienteId);
+                    cs.setInt(2, empresaId);
+                    cs.setString(3, prioridad);
+                    
+                    // Registrar parámetro de salida
+                    cs.registerOutParameter(4, Types.INTEGER);
+                    
+                    // Ejecutar el procedimiento
+                    cs.execute();
+                    
+                    // Recuperar el ID generado
+                    return cs.getInt(4);
+                }
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error al registrar orden: " + e.getMessage());
+            return -1;
+        }
+    }
 }
+
+
+
