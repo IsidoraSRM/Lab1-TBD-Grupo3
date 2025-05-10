@@ -57,8 +57,8 @@ public class OrderService {
     }
 
     //Procedure registerOrder
-    public int registerOrder(int clienteId, int empresaId, String prioridad) {
-        return orderRepository.registerOrder(clienteId, empresaId, prioridad);
+    public int registerOrder(int clienteId, String prioridad, String nombreMetodo, int monto,String nombre_servicio,String descripcion, String categoria, String direccionInicio,String direccionDestino) {
+        return orderRepository.registerOrder(clienteId,prioridad,nombreMetodo,monto,nombre_servicio,descripcion,categoria,direccionInicio,direccionDestino);
     }
 
     //Procedure-> cambiarEstadoPedido

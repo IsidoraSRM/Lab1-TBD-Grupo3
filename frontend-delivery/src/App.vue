@@ -11,17 +11,17 @@ export default {
 }
 </script>
 
-
 <template>
-  <div id="app">
-    <NavBar />
-    <div class="main-content">
-      <router-view />
+  <v-app>
+    <div id="app">
+      <NavBar />
+      <v-main>
+        <router-view />
+      </v-main>
+      <AppFooter />
     </div>
-    <AppFooter />
-  </div>
+  </v-app>
 </template>
-
 
 
 <style>

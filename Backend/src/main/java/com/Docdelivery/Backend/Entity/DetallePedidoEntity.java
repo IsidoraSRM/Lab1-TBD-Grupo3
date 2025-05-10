@@ -15,4 +15,6 @@ public class DetallePedidoEntity {
     public Long idServicio;
     //public Long productoId; // esto va?
     public Integer cantidad;
+    public String direccionsDestino;
+    public String direccionsInicio;
 }

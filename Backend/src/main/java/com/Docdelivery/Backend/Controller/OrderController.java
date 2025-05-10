@@ -91,11 +91,17 @@ public class OrderController {
     @PostMapping("/register")
     @Secured({"ROLE_CLIENTE", "ROLE_ADMIN"})
     public int registerOrder(
-            @RequestParam int clienteId,
-            @RequestParam int empresaId,
-            @RequestParam String prioridad
+            @RequestParam int clienteId, 
+            @RequestParam String prioridad, 
+            @RequestParam String nombreMetodo, 
+            @RequestParam int monto,
+            @RequestParam String nombre_servicio,
+            @RequestParam String descripcion, 
+            @RequestParam String categoria, 
+            @RequestParam String direccionInicio,
+            @RequestParam String direccionDestino
     ) {
-        return orderService.registerOrder(clienteId, empresaId, prioridad);
+        return orderService.registerOrder(clienteId,prioridad, nombreMetodo, monto, nombre_servicio, descripcion, categoria, direccionInicio, direccionDestino);
     }
 
 

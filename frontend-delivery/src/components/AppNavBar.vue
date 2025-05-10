@@ -23,8 +23,7 @@ export default {
         },
         logout() {
             authService.logout();
-            this.isLoggedIn = false;
-            this.userRole = '';
+            this.checkAuthStatus();
             this.$router.push('/login');
         }
     }
@@ -33,7 +32,7 @@ export default {
 
 <template>
     <nav>
-        <router-link to="/" class="title" img="DocDelivery.png">
+        <router-link to="/" class="title">
             <img src="@/assets/DocDelivery.png" alt="Logo" class="nav-logo">
             DocDelivery
         </router-link>
@@ -43,143 +42,150 @@ export default {
             <span></span>   
         </div>
         <ul :class="{ open: menuOpen }">
-            <li>
-                <router-link to="/">Inicio</router-link>
-            </li>
-            <li v-if="!isLoggedIn">
-                <router-link to="/login">Iniciar Sesión</router-link>
-            </li>
+            
+            <!-- Opciones para cliente -->
+            <template v-if="isLoggedIn && userRole === 'CLIENTE'">
+
+                <li>
+                    <router-link to="/homeClient" active-class="active">Inicio</router-link>
+                </li>
+                <li>
+                    <router-link to="/client" active-class="active">Nuevo Pedido</router-link>
+                </li>
+                <li>
+                    <router-link to="/my-orders" active-class="active">Mis Pedidos</router-link>
+                </li>
+            </template>
+
+            <!-- Opciones para admin -->
             <li v-if="isLoggedIn && userRole === 'ADMIN'">
-                <router-link to="/admin">Panel Admin</router-link>
+                <router-link to="/admin" active-class="active">Panel Admin</router-link>
             </li>
+
+            <!-- Opciones para trabajador -->
             <li v-if="isLoggedIn && userRole === 'TRABAJADOR'">
-                <router-link to="/trabajador">Panel Trabajador</router-link>
+                <router-link to="/trabajador" active-class="active">Panel Trabajador</router-link>
             </li>
-            <li v-if="isLoggedIn && userRole === 'CLIENTE'">
-                <router-link to="/client">Pedidos</router-link>
-            </li>
-            <li v-if="isLoggedIn">
-                <a href="#" @click.prevent="logout">Cerrar Sesión</a>
+
+            <!-- Menú usuario -->
+            <template v-if="isLoggedIn">
+                <li>
+                    <router-link to="/profile" active-class="active">Mi Perfil</router-link>
+                </li>
+                <li>
+                    <a href="#" @click.prevent="logout">Cerrar Sesión</a>
+                </li>
+            </template>
+
+            <li v-if="!isLoggedIn">
+                <router-link to="/login" active-class="active">Iniciar Sesión</router-link>
             </li>
         </ul>
     </nav>
 </template>
 
-
-
-<style >
-/* si el link esta activo se marca con este color*/
-.active {
-    background-color: #A3D9A5;
-}
-/*
-colores:
-- Naranjo quemado (rgb(209, 118, 0))  #D17600 → Botones y CTAs
-- Mostaza (rgb(245, 196, 72))   #F5C448 → Secciones destacadas
-- Terracota (rgb(181, 85, 41)) #B55529  → Contrastes elegantes
-- Gris cálido (rgb(226, 220, 210)) #E2DCD2  → Fondos
-- Azul petróleo (rgb(18, 90, 108)) 	#125A6C  → Detalles y profundidad
-*/
+<style scoped>
+/* Estilos base */
 nav {
     display: flex;
-    justify-content: space-between ;
+    justify-content: space-between;
     align-items: center;
     background-color: #125A6C;
-    position: fixed;  /* no se mueve el navbar con scroll*/
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     z-index: 1000;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 0.5rem 1rem;
 }
 
-nav .title {
+.title {
     font-size: 1.5rem;
-    margin:1rem;
     font-weight: bolder;
     text-decoration: none;
     color: #E2DCD2;
     display: flex;
     align-items: center;
+    gap: 8px;
 }
 
 .nav-logo {
-    height: 30px; /* Ajusta el tamaño según lo necesites */
+    height: 30px;
     width: auto;
-    margin-right: 8px; /* Espacio entre el logo y el texto */
-    vertical-align: middle; /* Alinea verticalmente con el texto */
-    
 }
 
-nav ul {
+ul {
     display: flex;
-}
-
-nav ul li {
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
     list-style: none;
-
 }
 
-nav ul li a {
+li a {
     display: block;
     text-decoration: none;
-    color:#E2DCD2;
+    color: #E2DCD2;
     font-weight: bold;
-    padding: 0.5rem;
-    margin: 0 0.5rem;
+    padding: 0.5rem 1rem;
     border-radius: 0.5rem;
-}
- /* el link que esta selecionado no cambiara de color si se pasa el mouse por encima*/
-nav ul li a:not(.active):hover {
-    background-color: #B55529 ;
+    transition: background-color 0.3s;
 }
 
-nav .menu {
+.active {
+    background-color: #A3D9A5;
+    color: #125A6C;
+}
+
+li a:not(.active):hover {
+    background-color: #B55529;
+}
+
+/* Menú hamburguesa */
+.menu {
     display: none;
-    position: absolute;
-    top: 0.75rem;
-    right: 0.5rem;
+    cursor: pointer;
     flex-direction: column;
     justify-content: space-between;
-    width:2.25rem;
+    width: 2.25rem;
     height: 2rem;
+    position: relative;
+    z-index: 1001;
+}
 
-}
-nav .menu span {
+.menu span {
     height: 0.4rem;
-    width:100%;
+    width: 100%;
     background-color: #E2DCD2;
-    border-radius: 0.2rem;;
+    border-radius: 0.2rem;
+    transition: all 0.3s;
 }
-/* cuando la pantalla sea menor a 480 el navar cambiara a un menu hamburguesa  */
- @media (max-width: 480px) {
-    
-    nav .menu {
+
+/* Responsive */
+@media (max-width: 768px) {
+    .menu {
         display: flex;
     }
-    nav {
-        flex-direction: column;
-        align-items: start;
-
-    }
-    nav ul {
+    
+    ul {
         display: none;
         flex-direction: column;
-        width: 100%;
-        margin-bottom: 0.25rem;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: #125A6C;
+        padding: 1rem;
     }
-    /* el menu hamburguesa se abre al hacer click en el icono de menu */
-    nav ul.open {
+    
+    ul.open {
         display: flex;
     }
-    nav ul li {
+    
+    li {
         width: 100%;
         text-align: center;
-        
-    }
-    nav ul li a {
-        margin: 0.2rem 0.5rem;
-
     }
 }
 </style>

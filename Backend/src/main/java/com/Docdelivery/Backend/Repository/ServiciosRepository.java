@@ -24,13 +24,14 @@ public class ServiciosRepository {
                     rs.getString("nombreServicio"),
                     rs.getString("descripcionServicio"),
                     rs.getInt("precioServicio"),
-                    rs.getString("categoriaServicio")
+                    rs.getString("categoriaServicio"),
+                    rs.getInt("stock")
             );
         }
     }
     //insertar servicio en la base de datos
     public void save(ServiciosEntity servicio) {
-        String sql = "INSERT INTO servicio (idEmpresaAsociada,nombreServicio,descripcionServicio,precioServicio,categoriaServicio) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO servicio (idEmpresaAsociada,nombreServicio,descripcionServicio,precioServicio,categoriaServicio,stock) VALUES(?,?,?,?,?,?)";
         jdbcTemplate.update(sql,servicio.getIdEmpresaAsociada(),servicio.getNombreServicio(),servicio.getDescripcionServicio(),servicio.getPrecioServicio(),servicio.getCatergoriaServicio());
     }
 
