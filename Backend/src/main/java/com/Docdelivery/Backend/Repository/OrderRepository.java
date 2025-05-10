@@ -94,8 +94,8 @@ public class OrderRepository {
     }
 
     //Procedure registerOrder
-    public int registerOrder(int clienteId, int empresaId, String prioridad) {
-        String query = "CALL register_order(?,?,?,?)";
+    public int registerOrder(int clienteId, String prioridad, String nombreMetodo, int monto,String nombre_servicio,String descripcion, String categoria, String direccionInicio,String direccionDestino) {
+        String query = "CALL register_order(?,?,?,?,?,?,?,?,?,?)";
         
         try {
             return jdbcTemplate.execute(
@@ -103,17 +103,25 @@ public class OrderRepository {
                 (CallableStatementCallback<Integer>) cs -> {
                     // Configurar parámetros de entrada
                     cs.setInt(1, clienteId);
-                    cs.setInt(2, empresaId);
-                    cs.setString(3, prioridad);
+                    cs.setString(2, prioridad);
+                    cs.setString(3,nombreMetodo);
+                    cs.setInt(4, monto);
+                    cs.setString(5, nombre_servicio);
+                    cs.setString(6, descripcion);
+                    cs.setString(7, categoria);
+                    cs.setString(8, direccionInicio);
+                    cs.setString(9, direccionDestino);
+                    
+
                     
                     // Registrar parámetro de salida
-                    cs.registerOutParameter(4, Types.INTEGER);
+                    cs.registerOutParameter(10, Types.INTEGER);
                     
                     // Ejecutar el procedimiento
                     cs.execute();
                     
                     // Recuperar el ID generado
-                    return cs.getInt(4);
+                    return cs.getInt(10);
                 }
             );
         } catch (Exception e) {

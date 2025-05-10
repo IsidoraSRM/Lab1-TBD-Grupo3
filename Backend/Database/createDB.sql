@@ -47,7 +47,9 @@ CREATE TABLE DetallePedido (
     idDetallePedido SERIAL PRIMARY KEY,
     idPedido INT REFERENCES OrderEntity(idPedido) ON DELETE CASCADE,
     idServicio INT,
-    cantidad INT
+    cantidad INT,
+    direccionDestino VARCHAR(255),
+    direccionInicio VARCHAR(255)
 );
 
 
@@ -57,7 +59,8 @@ CREATE TABLE Servicios (
     nombreServicio VARCHAR(255),
     descripcionServicio TEXT,
     precioServicio INT,
-    categoriaServicio VARCHAR(100)
+    categoriaServicio VARCHAR(100),
+    stock INT
 );
 
 CREATE TABLE MedioDePago (

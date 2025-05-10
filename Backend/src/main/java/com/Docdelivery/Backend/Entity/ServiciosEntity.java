@@ -16,4 +16,5 @@ public class ServiciosEntity {
     private String descripcionServicio;
     private Integer precioServicio;
     private String catergoriaServicio;
+    private Integer stock;
 }

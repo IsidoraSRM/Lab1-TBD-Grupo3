@@ -24,14 +24,16 @@ public class DetallePedidoRepository {
                 rs.getLong("idDetallePedido"),
                 rs.getLong("idPedido"),
                 rs.getLong("idServicio"),
-                rs.getInt("cantidad")
+                rs.getInt("cantidad"),
+                rs.getString("direccionDestino"),
+                rs.getString("direccionInicio")
             );
         }
     }
 
     // Guardar detalle de pedido
     public void save(DetallePedidoEntity detalle) {
-        String sql = "INSERT INTO DetallePedido (idPedido, idServicio, cantidad) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO DetallePedido (idPedido, idServicio, cantidad,direccionDestino,direccionInicio) VALUES (?, ?, ?,?,?)";
         jdbcTemplate.update(sql, detalle.getIdPedido(), detalle.getIdServicio(), detalle.getCantidad());
     }
 
