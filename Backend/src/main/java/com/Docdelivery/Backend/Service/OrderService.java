@@ -66,4 +66,10 @@ public class OrderService {
         orderRepository.cambiarEstadoPedido(idPedido, nuevoEstado);
     }
     
+    //Procedure confirmarPedido
+    public int confirmarPedido(int idPedido) {
+        return orderRepository.confirmarPedido(idPedido);
+    }
+    
+
 }

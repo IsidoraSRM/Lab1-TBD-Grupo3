@@ -136,6 +136,33 @@ public class OrderRepository {
         jdbcTemplate.update(sql, pedidoId, nuevoEstado);
     }
     
+    //Procedure confirmarPedido
+    public int confirmarPedido(int idPedido) {
+    String query = "CALL confirmar_pedido(?)";
+    
+    try {
+        jdbcTemplate.execute(
+            query,
+            (CallableStatementCallback<Integer>) cs -> {
+                // parametro de entrada
+                cs.setInt(1, idPedido);
+                
+                // ejecutar el procedimiento
+                cs.execute();
+                
+                
+                return 1;
+            }
+        );
+        return 1; // bien
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.out.println("Error al confirmar pedido: " + e.getMessage());
+        return -1; // Error
+    }
+}
+
+
 }
 
 

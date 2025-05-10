@@ -121,4 +121,24 @@ public class OrderController {
         }
     }
 
+    //Procedure confirmarPedido
+    @PostMapping("/confirmar/{idPedido}")
+    @Secured({"ROLE_TRABAJADOR", "ROLE_ADMIN"})
+    public ResponseEntity<?> confirmarPedido(@PathVariable int idPedido) {
+        try {
+            int resultado = orderService.confirmarPedido(idPedido);
+            if (resultado > 0) {
+                return ResponseEntity.ok("Pedido confirmado con éxito");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Error al confirmar el pedido");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al confirmar el pedido: " + e.getMessage());
+        }
+    }
+
+
+
 }
