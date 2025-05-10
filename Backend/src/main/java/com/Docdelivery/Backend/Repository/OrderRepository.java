@@ -122,9 +122,11 @@ public class OrderRepository {
             return -1;
         }
     }
-
-
-
+    //Procedimiento para actualizar el estado de los pedidos
+    public void cambiarEstadoPedido(Long pedidoId, String nuevoEstado) {
+        String sql = "CALL cambiar_estado_pedido(?, ?)";
+        jdbcTemplate.update(sql, pedidoId, nuevoEstado);
+    }
     
 }
 

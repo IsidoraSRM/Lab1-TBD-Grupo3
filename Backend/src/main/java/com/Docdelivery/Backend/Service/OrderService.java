@@ -61,6 +61,9 @@ public class OrderService {
         return orderRepository.registerOrder(clienteId, empresaId, prioridad);
     }
 
-    
+    //Procedure-> cambiarEstadoPedido
+    public  void  cambiarEstadoPedido(Long idPedido, String nuevoEstado) {
+        orderRepository.cambiarEstadoPedido(idPedido, nuevoEstado);
+    }
     
 }

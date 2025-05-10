@@ -1,6 +1,8 @@
 package com.Docdelivery.Backend.Service;
 
+import com.Docdelivery.Backend.Entity.ClienteEntity;
 import com.Docdelivery.Backend.Entity.UsuarioEntity;
+import com.Docdelivery.Backend.Repository.ClienteRepository;
 import com.Docdelivery.Backend.Repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

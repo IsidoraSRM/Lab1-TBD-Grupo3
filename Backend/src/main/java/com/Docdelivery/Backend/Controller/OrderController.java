@@ -99,4 +99,20 @@ public class OrderController {
     }
 
 
+    //Procedimiento para cambiar el estado de un pedido
+    @PutMapping("/{id}/estado")
+    @Secured("ROLE_ADMIN")
+    public ResponseEntity<String> cambiarEstadoPedido(
+            @PathVariable("id") Long idPedido,
+            @RequestParam("estado") String nuevoEstado) {
+
+        try {
+            orderService.cambiarEstadoPedido(idPedido, nuevoEstado);
+            return ResponseEntity.ok("Estado del pedido actualizado correctamente.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al cambiar el estado del pedido: " + e.getMessage());
+        }
+    }
+
 }
