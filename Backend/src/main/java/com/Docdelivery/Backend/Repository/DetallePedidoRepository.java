@@ -1,6 +1,7 @@
 package com.Docdelivery.Backend.Repository;
 
 import com.Docdelivery.Backend.Entity.DetallePedidoEntity;
+import com.Docdelivery.Backend.dto.ServiciosDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -38,6 +39,24 @@ public class DetallePedidoRepository {
     public List<DetallePedidoEntity> findByPedidoId(Long idPedido) {
         String sql = "SELECT * FROM DetallePedido WHERE idPedido = ?";
         return jdbcTemplate.query(sql, new DetallePedidoRowMapper(), idPedido);
+    }
+
+    public List<ServiciosDto> getServiciosMasPedidosUltimoMes() {
+        String sql = """
+        SELECT s.nombreServicio AS servicio, s.categoriaServicio AS categoria, COUNT(dp.idDetallePedido) AS cantidad_pedidos
+        FROM DetallePedido dp
+        JOIN Servicios s ON dp.idServicio = s.idServicio
+        JOIN OrderEntity o ON dp.idPedido = o.idPedido
+        WHERE o.fechaPedido >= NOW() - INTERVAL '1 MONTH'
+        GROUP BY s.nombreServicio, s.categoriaServicio
+        ORDER BY cantidad_pedidos DESC
+    """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new ServiciosDto(
+                rs.getString("servicio"),
+                rs.getString("categoria"),
+                rs.getInt("cantidad_pedidos")
+        ));
     }
     
 }
