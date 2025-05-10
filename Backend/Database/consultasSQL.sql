@@ -1,3 +1,4 @@
+-- consulta numero 3
 SELECT EmpresaAsociada.nombreEmpresa, COUNT(*) AS entregas_fallidas  -- Selecciona el nombre de la empresa y cuenta cuántos pedidos fallidos tiene
 FROM OrderEntity                                                     -- Desde la tabla de pedidos (OrderEntity)
 JOIN EmpresaAsociada                                                 -- Une con la tabla EmpresaAsociada usando la clave foránea que vincula cada pedido con su empresa
@@ -7,6 +8,8 @@ GROUP BY EmpresaAsociada.nombreEmpresa                               -- Agrupa l
 ORDER BY entregas_fallidas DESC;                                     -- Ordena de mayor a menor según la cantidad de fallos
 
 
+
+-- consulta numero 4
 SELECT repartidor.nombre AS nombre_repartidor,                       -- Selecciona el nombre del repartidor
        ROUND(                                                        -- Redondea el resultado del promedio a un número entero
          AVG(                                                        -- Calcula el promedio de:
