@@ -38,14 +38,14 @@ CREATE OR REPLACE FUNCTION insertar_calificacion_automatica()
 RETURNS TRIGGER AS $$
 BEGIN
   -- Solo actuar si la fecha de entrega fue hace más de 48 horas
-  IF NEW.fechahoraentrega IS NOT NULL AND NEW.fechahoraentrega <= NOW() - INTERVAL '48 hours' THEN
+  IF NEW.fechapedido IS NOT NULL AND NEW.fechapedido <= NOW() - INTERVAL '48 hours' THEN
 
     -- Verificar si ya existe una calificación para este pedido
     IF NOT EXISTS (
-      SELECT 1 FROM calificacion WHERE idpedido = NEW.idpedido
+      SELECT 1 FROM rating WHERE idpedido = NEW.idpedido
     ) THEN
-      INSERT INTO calificacion (idpedido, puntuacion, comentario)
-      VALUES (NEW.idpedido, 3, 'Calificación automática por sistema');
+      INSERT INTO rating (idpedido, puntuacion, comentario)
+      VALUES (NEW.idpedido, 1, 'Calificación automática por sistema');
       
       RAISE NOTICE 'Calificación automática insertada para el pedido %', NEW.idpedido;
     END IF;
