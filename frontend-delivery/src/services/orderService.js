@@ -36,10 +36,10 @@ const orderService = {
     });
   },
 
-  cambiarEstadoPedido(idPedido, nuevoEstado) {
-    return axios.put(`${API_URL}/${idPedido}/estado?estado=${nuevoEstado}`, null, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
-    });
+  cambiarEstadoPedido(idPedido, estado) {
+  return axios.put(`${API_URL}/${idPedido}/estado?nuevoEstado=${estado}`, null, {
+    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
+  });
   },
 
 
@@ -65,7 +65,6 @@ const orderService = {
       headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
     });
   }
-  
 };
 
 export default orderService;

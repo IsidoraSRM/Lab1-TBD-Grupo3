@@ -9,5 +9,12 @@ export default {
         'Authorization': `Bearer ${localStorage.getItem('authToken')}` // Si es necesario
       }
     });
+  }, 
+  getDesempenoRepartidor() {
+    return axios.get(`${API_URL}/desempeno`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('authToken')}` // Si es necesario
+      }
+    });
   }
 };

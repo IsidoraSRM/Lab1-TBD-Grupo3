@@ -107,7 +107,7 @@ public class OrderController {
 
 
     //Procedimiento para cambiar el estado de un pedido
-    @Secured("ROLE_ADMIN")
+    @Secured({"ROLE_TRABAJADOR", "ROLE_ADMIN"})
     @PutMapping("/{id}/estado")
     public ResponseEntity<String> cambiarEstadoPedido(
             @PathVariable("id") int idPedido,

@@ -64,44 +64,49 @@
 
       <!-- Vistas SQL como estadísticas clave -->
       <div class="card stats-section">
-        <div class="card-header">
-          <h2>Vistas SQL Clave</h2>
-          <select v-model="selectedView" class="query-select" @change="loadView">
-            <option value="" disabled>Seleccione una vista</option>
-            <option value="13">Resumen de pedidos por cliente</option>
-            <option value="14">Desempeño por repartidor</option>
-            <option value="15">Empresas con mayor volumen</option>
-          </select>
+    <div class="card-header">
+      <h2>Vistas SQL Clave</h2>
+      <select v-model="selectedView" class="query-select" @change="loadView">
+        <option value="" disabled>Seleccione una vista</option>
+        <option value="13">Resumen de pedidos por cliente</option>
+        <option value="14">Desempeño por repartidor</option>
+        <option value="15">Empresas con mayor volumen</option>
+      </select>
+    </div>
+    <div class="card-body">
+      <div v-if="viewLoading" class="loading-indicator">
+        <i class="fas fa-spinner fa-spin"></i> Cargando vista...
+      </div>
+      
+      <!-- Caso específico para Desempeño por repartidor -->
+      <RepartidorPerformanceTable v-else-if="selectedView === '14'" />
+      <ClientSummary v-else-if="selectedView === '13'" />
+      <!-- Otras vistas -->
+      <div v-else-if="viewResults" class="query-results">
+        <div class="results-header">
+          <h3>{{ viewTitle }}</h3>
         </div>
-        <div class="card-body">
-          <div v-if="viewLoading" class="loading-indicator">
-            <i class="fas fa-spinner fa-spin"></i> Cargando vista...
-          </div>
-          <div v-else-if="viewResults" class="query-results">
-            <div class="results-header">
-              <h3>{{ viewTitle }}</h3>
-            </div>
-            <div class="table-responsive">
-              <table class="results-table">
-                <thead>
-                  <tr>
-                    <th v-for="(header, index) in viewHeaders" :key="index">{{ header }}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(row, rowIndex) in viewResults" :key="rowIndex">
-                    <td v-for="(cell, cellIndex) in row" :key="cellIndex">{{ cell }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div v-else class="empty-state">
-            <i class="fas fa-table"></i>
-            <p>Seleccione una vista SQL para ver los resultados</p>
-          </div>
+        <div class="table-responsive">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th v-for="(header, index) in viewHeaders" :key="index">{{ header }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, rowIndex) in viewResults" :key="rowIndex">
+                <td v-for="(cell, cellIndex) in row" :key="cellIndex">{{ cell }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
+      <div v-else class="empty-state">
+        <i class="fas fa-table"></i>
+        <p>Seleccione una vista SQL para ver los resultados</p>
+      </div>
+    </div>
+  </div>
     </div>
   </div>
 </template>
@@ -111,9 +116,14 @@ import pagoService from '@/services/pagoService';
 import detallePedidoService from '@/services/detallePedidoService'; 
 import repartidorService from '@/services/repartidorService';
 import clienteService from '@/services/clienteService';
-
+import RepartidorPerformanceTable from '@/components/PerformanceDist.vue';
+import ClientSummary from '@/components/ClientSummary.vue';
 export default {
   name: 'AdminView',
+  components: {
+    RepartidorPerformanceTable,
+    ClientSummary
+  },
   data() {
     return {
       lastUpdated: new Date().toLocaleTimeString(),
@@ -164,6 +174,7 @@ export default {
     }
   },
   methods: {
+    
     fetchData() {
       this.lastUpdated = new Date().toLocaleTimeString()
     },
@@ -240,6 +251,13 @@ export default {
     },
     
     loadView() {
+      if (this.selectedView === '14') {
+        return;
+      }
+      if(this.selectedView === '13'){
+        return;
+
+      }
       this.viewLoading = true
       this.viewResults = null
       

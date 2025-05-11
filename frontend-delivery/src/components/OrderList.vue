@@ -43,7 +43,7 @@
                     >
                     {{ pedidoEnProceso === item.pedido?.idPedido ? 'Confirmando...' : 'Confirmar Pedido' }}
                 </button>
-              <button class="action-button confirm-button" @click="viewDetails(item.pedido?.idPedido)">
+              <button class="action-button confirm-button" @click="delivered(item.pedido?.idPedido,'ENTREGADO')">
                 Entregado                
               </button>
             </td>
@@ -204,52 +204,84 @@ export default {
         'PENDIENTE': 'Pendiente',
         'EN_CAMINO': 'En camino',
         'ENTREGADO': 'Entregado',
-        'CANCELADO': 'Cancelado'
+        'CANCELADO': 'Cancelado',
+        'CONFIRMADO': 'Confirmado'
     };
     
     return statusMap[status] || status;
     },
 
     formatDate(dateString) {
-    if (!dateString) return 'N/A';
-    
-    try {
+      if (!dateString) return 'N/A';
+      
+      try {
         const date = new Date(dateString);
-        return date.toLocaleDateString();
-    } catch (e) {
+        // Usar toLocaleString para mostrar fecha Y hora
+        return date.toLocaleString('es-CL', {
+          year: 'numeric', 
+          month: '2-digit', 
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch (e) {
         return 'Fecha inválida';
-    }
+      }
     },// Añadir este método en la sección "methods" del componente
     confirmarPedido(idPedido) {
-  if (!idPedido) {
-    this.error = 'No se puede confirmar: ID de pedido no válido';
-    return;
-  }
-  
-  // Mostrar confirmación antes de proceder
-  if (!confirm('¿Estás seguro de que deseas confirmar este pedido?')) {
-    return;
-  }
-  
-  // Indicador de carga para este pedido específico
-  this.pedidoEnProceso = idPedido;
-  
-  orderService.confirmarPedido(idPedido)
-    .then(() => { // Quitar el parámetro 'response' no utilizado
-      // Mostrar mensaje de éxito
-      alert('Pedido confirmado exitosamente');
+    if (!idPedido) {
+      this.error = 'No se puede confirmar: ID de pedido no válido';
+      return;
+    }
+    
+    // Mostrar confirmación antes de proceder
+    if (!confirm('¿Estás seguro de que deseas confirmar este pedido?')) {
+      return;
+    }
+    
+    // Indicador de carga para este pedido específico
+    this.pedidoEnProceso = idPedido;
+    
+    orderService.confirmarPedido(idPedido)
+      .then(() => { // Quitar el parámetro 'response' no utilizado
+        // Mostrar mensaje de éxito
+        alert('Pedido confirmado exitosamente');
+        
+        // Recargar la lista de pedidos para reflejar el cambio
+        this.fetchOrders();
+      })
+      .catch(error => {
+        console.error('Error al confirmar pedido:', error);
+        this.error = 'Error al confirmar el pedido. Inténtalo de nuevo.';
+      })
+      .finally(() => {
+        this.pedidoEnProceso = null; // Limpiar el indicador de carga
+      });
+    },
+    delivered(idPedido, estado) {
+      if (!idPedido) {
+        this.error = 'No se puede confirmar: ID de pedido no válido';
+        return;
+      }
       
-      // Recargar la lista de pedidos para reflejar el cambio
-      this.fetchOrders();
-    })
-    .catch(error => {
-      console.error('Error al confirmar pedido:', error);
-      this.error = 'Error al confirmar el pedido. Inténtalo de nuevo.';
-    })
-    .finally(() => {
-      this.pedidoEnProceso = null; // Limpiar el indicador de carga
-    });
-}
+      // Mostrar confirmación antes de proceder
+      if (!confirm('¿Estás seguro de que deseas marcar este pedido como entregado?')) {
+        return;
+      }
+      
+      orderService.cambiarEstadoPedido(idPedido, estado)
+        .then(() => { // Quitar el parámetro 'response' no utilizado
+          // Mostrar mensaje de éxito
+          alert('Pedido marcado como entregado exitosamente');
+          
+          // Recargar la lista de pedidos para reflejar el cambio
+          this.fetchOrders();
+        })
+        .catch(error => {
+          console.error('Error al marcar pedido como entregado:', error);
+          this.error = 'Error al marcar el pedido como entregado. Inténtalo de nuevo.';
+        });
+    }
   }
 }
 </script>
@@ -301,6 +333,10 @@ export default {
 .status-badge.entregado {
   background-color: #e8f5e9;
   color: #2e7d32;
+}
+.status-badge.confirmado {
+  background-color: #e8f0fe;
+  color: #3f51b5; /* Color púrpura/azul oscuro */
 }
 
 .priority-tag {

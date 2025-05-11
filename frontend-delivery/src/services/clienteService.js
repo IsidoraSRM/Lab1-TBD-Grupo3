@@ -9,5 +9,12 @@ export default {
         'Authorization': `Bearer ${localStorage.getItem('authToken')}` // Requiere autenticación ADMIN
       }
     });
-  }
+  },
+  getAllSummaries() {
+    return axios.get(`${API_URL}/order-summaries`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('authToken')}` // Requiere autenticación ADMIN
+      }
+    });
+  }    
 };

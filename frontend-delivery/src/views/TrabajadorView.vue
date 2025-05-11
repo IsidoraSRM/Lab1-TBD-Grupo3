@@ -19,7 +19,7 @@
     },
     data() {
       return {
-        currentRepartidorId: 3 // Este valor debería venir de tu sistema de autenticación
+        currentRepartidorId: localStorage.getItem('userId') // Este valor debería venir de tu sistema de autenticación
       };
     }
   }

@@ -63,7 +63,7 @@ export default {
                 <p>Tienes {{ activeOrders }} pedidos en curso</p>
                 
                 <div class="quick-actions">
-                    <router-link to="/new-order" class="btn btn-primary">Nuevo Pedido</router-link>
+                    <router-link to="/client" class="btn btn-primary">Nuevo Pedido</router-link>
                     <router-link to="/order-history" class="btn btn-secondary">Ver Historial</router-link>
                 </div>
             </div>
