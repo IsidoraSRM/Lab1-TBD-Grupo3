@@ -55,14 +55,16 @@ public class PagoRepository {
 
 	// ¿Qué medio de pago se utiliza más en pedidos urgentes?
 	public String findMedioDePagoMasUsadoEnUrgentes() {
-		String sql = "SELECT mediodepago.nombremetododepago" +
-		"FROM pago" +
-		"JOIN orderentity ON orderentity.idpedido = pago.idpedido" +
-		"JOIN mediodepago ON mediodepago.idmetododepago = pago.idmediodepago" +
-		"WHERE orderentity.prioridadpedido ILIKE 'Alta' OR orderentity.prioridadpedido ILIKE 'URGENTE'" +
-		"GROUP BY mediodepago.nombremetododepago" +
-		"ORDER BY COUNT(*) DESC" +
-		"LIMIT 1";
+		String sql = """
+		SELECT mediodepago.nombremetododepago
+		FROM pago
+		JOIN orderentity ON orderentity.idpedido = pago.idpedido
+		JOIN mediodepago ON mediodepago.idmetododepago = pago.idmediodepago
+		WHERE orderentity.prioridadpedido ILIKE 'Alta' OR orderentity.prioridadpedido ILIKE 'URGENTE'
+		GROUP BY mediodepago.nombremetododepago
+		ORDER BY COUNT(*) DESC
+		LIMIT 1
+	""";
 
 		return jdbcTemplate.queryForObject(sql, String.class);
 	}
