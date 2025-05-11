@@ -61,7 +61,7 @@ public class PagoRepository {
     FROM pago
     JOIN orderentity ON orderentity.idpedido = pago.idpedido
     JOIN mediodepago ON mediodepago.idmetododepago = pago.idmediodepago
-    WHERE orderentity.prioridadpedido ILIKE 'Alta' OR orderentity.prioridadpedido ILIKE 'URGENTE'
+    WHERE orderentity.prioridadpedido ILIKE 'ALTA' OR orderentity.prioridadpedido ILIKE 'URGENTE'
     GROUP BY mediodepago.nombremetododepago
     ORDER BY COUNT(*) DESC
     LIMIT 1
