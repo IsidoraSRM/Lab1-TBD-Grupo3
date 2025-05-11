@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -54,18 +55,18 @@ public class PagoRepository {
 	}
 
 	// ¿Qué medio de pago se utiliza más en pedidos urgentes?
-	public String findMedioDePagoMasUsadoEnUrgentes() {
+	public List<Map<String, Object>> findMedioDePagoMasUsadoEnUrgentes() {
 		String sql = """
-		SELECT mediodepago.nombremetododepago
-		FROM pago
-		JOIN orderentity ON orderentity.idpedido = pago.idpedido
-		JOIN mediodepago ON mediodepago.idmetododepago = pago.idmediodepago
-		WHERE orderentity.prioridadpedido ILIKE 'Alta' OR orderentity.prioridadpedido ILIKE 'URGENTE'
-		GROUP BY mediodepago.nombremetododepago
-		ORDER BY COUNT(*) DESC
-		LIMIT 1
-	""";
+    SELECT mediodepago.nombremetododepago, COUNT(*) AS cantidad
+    FROM pago
+    JOIN orderentity ON orderentity.idpedido = pago.idpedido
+    JOIN mediodepago ON mediodepago.idmetododepago = pago.idmediodepago
+    WHERE orderentity.prioridadpedido ILIKE 'Alta' OR orderentity.prioridadpedido ILIKE 'URGENTE'
+    GROUP BY mediodepago.nombremetododepago
+    ORDER BY COUNT(*) DESC
+    LIMIT 1
+    """;
 
-		return jdbcTemplate.queryForObject(sql, String.class);
+		return jdbcTemplate.queryForList(sql);
 	}
 }

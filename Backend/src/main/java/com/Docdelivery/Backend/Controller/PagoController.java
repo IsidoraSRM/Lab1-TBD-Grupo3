@@ -14,7 +14,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/pagos")
 @CrossOrigin
-public class PagoController {
+public class 	PagoController {
 
 	@Autowired
 	private PagoService pagoService;
@@ -66,11 +66,9 @@ public class PagoController {
 	@Secured({"ROLE_CLIENTE", "ROLE_ADMIN", "ROLE_TRABAJADOR"})
 	public ResponseEntity<?> getMedioDePagoMasUsadoEnUrgentes() {
 		try {
-			String metodoMasUsado = pagoService.getMedioDePagoMasUsadoEnUrgentes();
+			Map<String, Object> metodoMasUsado = pagoService.getMedioDePagoMasUsadoEnUrgentes();
 			if (metodoMasUsado != null && !metodoMasUsado.isEmpty()) {
-				Map<String, String> response = new HashMap<>();
-				response.put("Medio de pago más usado en pedidos urgentes", metodoMasUsado);
-				return ResponseEntity.ok(response);
+				return ResponseEntity.ok(metodoMasUsado);
 			} else {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND)
 						.body("No se encontró ningún método de pago para pedidos urgentes.");

@@ -86,3 +86,21 @@ INSERT INTO OrderEntity (cliente_id, idEmpresaAsociada, repartidor_id, fechaPedi
 (9, 5, 4, '2024-05-19 11:00', '2024-05-19 12:30', 'ENTREGADO', 'BAJA'),
 (10, 1, 5, '2024-05-20 10:30', '2024-05-20 12:00', 'ENTREGADO', 'ALTA');
 
+-- insertar ratings con puntuaciones y comentarios para los pedidos
+INSERT INTO Rating (idPedido, score, comment) VALUES
+(1, 4, 'Excelente servicio, rápido y eficiente.'),  -- Calificación para el repartidor 1 (Ignacio Valenzuela) en el pedido 1
+(2, 5, 'Muy buena atención, puntual y cordial.'),   -- Calificación para el repartidor 2 (Paula Ramírez) en el pedido 2
+(3, 3, 'El repartidor llegó un poco tarde, pero la entrega fue correcta.'),  -- Calificación para el repartidor 3 (Andrés Fuentes) en el pedido 3
+(5, 2, 'El repartidor llegó tarde y no fue tan amable.'),  -- Calificación para el repartidor 5 (Tomás León) en el pedido 5
+(6, 4, 'El repartidor fue puntual, aunque el paquete no estaba del todo bien embalado.'),  -- Calificación para el repartidor 1 (Ignacio Valenzuela) en el pedido 6
+(8, 5, 'Todo perfecto, la entrega fue rápida y el repartidor muy amable.'),  -- Calificación para el repartidor 3 (Andrés Fuentes) en el pedido 8
+(10, 4, 'Buen servicio, aunque el repartidor no fue tan amable en la entrega.'), -- Calificación para el repartidor 5 (Tomás León) en el pedido 10
+(11, 3, 'El repartidor llegó a tiempo, pero hubo un pequeño problema con el paquete.'), -- Calificación para el repartidor 1 (Ignacio Valenzuela) en el pedido 11
+(12, 2, 'El repartidor no fue muy amable y se retrasó bastante.'), -- Calificación para el repartidor 2 (Paula Ramírez) en el pedido 12
+(13, 5, 'El repartidor fue puntual y muy educado, todo excelente.'), -- Calificación para el repartidor 3 (Andrés Fuentes) en el pedido 13
+(15, 3, 'El servicio fue correcto, pero no fue el mejor en cuanto a rapidez.'), -- Calificación para el repartidor 5 (Tomás León) en el pedido 15
+(16, 4, 'La entrega fue rápida, pero el repartidor no ofreció una sonrisa.'), -- Calificación para el repartidor 1 (Ignacio Valenzuela) en el pedido 16
+(18, 5, 'Muy buena entrega, el repartidor fue muy profesional y rápido.'), -- Calificación para el repartidor 3 (Andrés Fuentes) en el pedido 18
+(19, 3, 'La entrega fue un poco más lenta de lo esperado, pero en general estuvo bien.'), -- Calificación para el repartidor 4 (Catalina Bravo) en el pedido 19
+(20, 4, 'El repartidor fue puntual y profesional, pero la entrega fue un poco apresurada.'); -- Calificación para el repartidor 5 (Tomás León) en el pedido 20
+
