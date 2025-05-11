@@ -1,7 +1,7 @@
 package com.Docdelivery.Backend.Service;
 
-import com.Docdelivery.Backend.Entity.ClienteEntity;
 import com.Docdelivery.Backend.Repository.ClienteRepository;
+import com.Docdelivery.Backend.dto.ClienteConTotalGastadoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +13,6 @@ public class ClienteServices {
     private ClienteRepository clienteRepository;
 
     //consulta numero 1
-    public Optional<ClienteEntity> obtenerClienteMasAGastado() {return clienteRepository.obtenerClienteQueMasHaGastado();}
+    public Optional<ClienteConTotalGastadoDTO> obtenerClienteMasAGastado() {return clienteRepository.obtenerClienteQueMasHaGastado();}
 
 }

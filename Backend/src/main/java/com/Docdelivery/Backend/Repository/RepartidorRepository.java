@@ -4,6 +4,7 @@ package com.Docdelivery.Backend.Repository;
 import com.Docdelivery.Backend.Entity.RepartidorEntity;
 import com.Docdelivery.Backend.dto.TopRepartidorDto;
 
+import com.Docdelivery.Backend.dto.VistaRepartidorDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -113,6 +114,17 @@ public class RepartidorRepository {
         dto.setRendimiento(rs.getDouble("rendimiento"));
         return dto;
     };
+
+    public List<VistaRepartidorDto> obtenerDesempenoRepartidores() {
+        String sql = "SELECT * FROM VistaDesempenoRepartidores";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new VistaRepartidorDto(
+                rs.getString("repartidor"),
+                rs.getInt("total_entregas"),
+                rs.getDouble("tiempo_promedio_horas"),
+                rs.getDouble("calificacion_promedio")
+        ));
+    }
 
 
 
