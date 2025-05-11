@@ -25,8 +25,6 @@ public class OrderRepository {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-
     // RowMapper para OrderEntity
     private static class OrderRowMapper implements RowMapper<OrderEntity> {
         @Override
@@ -131,19 +129,23 @@ public class OrderRepository {
         }
     }
     //Procedimiento para actualizar el estado de los pedidos
-    public void cambiarEstadoPedido(Long idPedido, String nuevoEstado) {
-        jdbcTemplate.execute(
-                "CALL cambiar_estado_pedido(?, ?)",
-                (PreparedStatementCallback<Boolean>) ps -> {
-                    ps.setLong(1, idPedido);
-                    ps.setString(2, nuevoEstado);
-                    return ps.execute();
-                }
-        );
+    public boolean cambiarEstadoPedido(int idPedido, String nuevoEstado) {
+        String query = "CALL cambiar_estado_pedido(?, ?)";
+
+        try {
+            jdbcTemplate.execute(query, (CallableStatementCallback<Void>) cs -> {
+                cs.setInt(1, idPedido);
+                cs.setString(2, nuevoEstado);
+                cs.execute();
+                return null;
+            });
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error al cambiar el estado del pedido: " + e.getMessage());
+            return false;
+        }
     }
-
-
-    
     //Procedure confirmarPedido
     public int confirmarPedido(int idPedido) {
         String query = "CALL confirmar_pedido(?)";
@@ -187,8 +189,6 @@ public class OrderRepository {
             return Collections.emptyList();
         }
     }
-
-
 }
 
 

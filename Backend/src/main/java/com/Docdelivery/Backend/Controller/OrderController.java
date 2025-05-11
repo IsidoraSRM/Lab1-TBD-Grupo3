@@ -106,23 +106,19 @@ public class OrderController {
 
 
     //Procedimiento para cambiar el estado de un pedido
-    @PutMapping("/{id}/estado")
     @Secured("ROLE_ADMIN")
+    @PutMapping("/{id}/estado")
     public ResponseEntity<String> cambiarEstadoPedido(
-            @PathVariable("id") Long idPedido,
-            @RequestParam("estado") String nuevoEstado) {
+            @PathVariable("id") int idPedido,
+            @RequestParam("nuevoEstado") String nuevoEstado) {
 
-        try {
-            // Validación adicional del estado
-            if (!List.of("Pendiente", "En proceso", "Entregado", "Cancelado").contains(nuevoEstado)) {
-                return ResponseEntity.badRequest().body("Estado no válido");
-            }
+        boolean exito = orderService.cambiarEstado(idPedido, nuevoEstado);
 
-            orderService.cambiarEstadoPedido(idPedido, nuevoEstado);
-            return ResponseEntity.ok("Estado del pedido actualizado correctamente.");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al cambiar el estado del pedido: " + e.getMessage());
+        if (exito) {
+            return ResponseEntity.ok("Estado del pedido actualizado correctamente");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Error al actualizar el estado del pedido");
         }
     }
 

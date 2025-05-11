@@ -11,11 +11,11 @@ BEGIN
     IF EXISTS (
         SELECT 1 FROM OrderEntity
         WHERE idPedido = pedido_id
-        AND estadoPedido NOT IN ('Cancelado', 'Entregado')
+        AND estadoPedido NOT IN ('CANCELADO', 'ENTREGADO')
     ) THEN
 
         	-- si  el nueva estado es 'Entregado', también actualiza la fecha de entrega
-        IF nuevo_estado = 'Entregado' THEN
+        IF nuevo_estado = 'ENTREGADO' THEN
             UPDATE OrderEntity
             SET estadoPedido = nuevo_estado,
                 fechaEntrega = NOW()

@@ -69,13 +69,8 @@ public class OrderService {
     }
 
     //Procedure-> cambiarEstadoPedido
-    @Transactional
-    public void cambiarEstadoPedido(Long idPedido, String nuevoEstado) {
-        try {
-            orderRepository.cambiarEstadoPedido(idPedido, nuevoEstado);
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Error al cambiar estado del pedido: " + e.getMostSpecificCause().getMessage());
-        }
+    public boolean cambiarEstado(int idPedido, String nuevoEstado) {
+        return orderRepository.cambiarEstadoPedido(idPedido, nuevoEstado);
     }
     
     //Procedure confirmarPedido
