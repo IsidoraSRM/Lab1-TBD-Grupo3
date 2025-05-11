@@ -3,6 +3,7 @@ package com.Docdelivery.Backend.Service;
 
 import com.Docdelivery.Backend.dto.TopRepartidorDto;
 import com.Docdelivery.Backend.Repository.RepartidorRepository;
+import com.Docdelivery.Backend.dto.VistaRepartidorDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,4 +23,7 @@ public class RepartidorService {
         public Optional<Long> getRepartidorIdByUsuarioId(Long usuarioId) {
     return repartidorRepository.findRepartidorIdByUsuarioId(usuarioId);
 }
+    public List<VistaRepartidorDto> obtenerDesempeno() {
+        return repartidorRepository.obtenerDesempenoRepartidores();
+    }
 }
