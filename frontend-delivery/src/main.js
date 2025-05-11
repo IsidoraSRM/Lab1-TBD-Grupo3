@@ -3,10 +3,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
 import { authService } from './services/authService'
 
-import { createVuetify } from 'vuetify'
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
-import 'vuetify/styles'
 
 // Import your view components
 import HomeView from './views/HomeView.vue'
@@ -14,10 +10,7 @@ import HomeViewClient from './views/HomeViewClient.vue'
 
 import LoginView from './views/LoginView.vue'
 
-const vuetify = createVuetify({
-  components,
-  directives,
-})
+
 
 
 // Define your routes
@@ -102,5 +95,4 @@ router.beforeEach((to, from, next) => {
 // Create the app and use the router
 const app = createApp(App)
 app.use(router)
-app.use(vuetify)
 app.mount('#app')
