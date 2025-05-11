@@ -13,66 +13,6 @@
         <span class="last-updated">Última actualización: {{ lastUpdated }}</span>
       </div>
     </div>
-
-    <!-- Resumen rápido -->
-    <div class="quick-stats">
-      <div class="stat-card">
-        <div class="stat-icon bg-primary">
-          <i class="fas fa-shopping-bag"></i>
-        </div>
-        <div class="stat-info">
-          <h3>Pedidos hoy</h3>
-          <p class="stat-value">{{ stats.ordersToday }}</p>
-          <p class="stat-change" :class="stats.ordersChange >= 0 ? 'positive' : 'negative'">
-            <i :class="stats.ordersChange >= 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'"></i>
-            {{ Math.abs(stats.ordersChange) }}% desde ayer
-          </p>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon bg-success">
-          <i class="fas fa-users"></i>
-        </div>
-        <div class="stat-info">
-          <h3>Clientes nuevos</h3>
-          <p class="stat-value">{{ stats.newCustomers }}</p>
-          <p class="stat-change positive">
-            <i class="fas fa-arrow-up"></i>
-            12% este mes
-          </p>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon bg-warning">
-          <i class="fas fa-truck"></i>
-        </div>
-        <div class="stat-info">
-          <h3>Entregas pendientes</h3>
-          <p class="stat-value">{{ stats.pendingDeliveries }}</p>
-          <p class="stat-change negative">
-            <i class="fas fa-arrow-down"></i>
-            5% menos que ayer
-          </p>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon bg-danger">
-          <i class="fas fa-exclamation-triangle"></i>
-        </div>
-        <div class="stat-info">
-          <h3>Problemas reportados</h3>
-          <p class="stat-value">{{ stats.reportedIssues }}</p>
-          <p class="stat-change" :class="stats.issuesChange >= 0 ? 'positive' : 'negative'">
-            <i :class="stats.issuesChange >= 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'"></i>
-            {{ Math.abs(stats.issuesChange) }}% esta semana
-          </p>
-        </div>
-      </div>
-    </div>
-
     <!-- Sección principal -->
     <div class="main-content">
       <!-- Consultas SQL -->
@@ -85,8 +25,8 @@
             <option value="2">Productos más pedidos por categoría</option>
             <option value="3">Empresas con más entregas fallidas</option>
             <option value="4">Tiempo promedio por repartidor</option>
-            <option value="5">Mejores repartidores</option>
-            <option value="6">Medios de pago en pedidos urgentes</option>
+            <option value="5">Obtener los 3 repartidores con mejor rendimiento (basado en entregas y puntuación).</option>
+            <option value="6">Obtener el medio de pago más usado en pedidos urgentes</option>
           </select>
           <button class="btn-run-query" @click="runQuery" :disabled="!selectedQuery">
             Ejecutar
@@ -99,9 +39,6 @@
           <div v-else-if="queryResults" class="query-results">
             <div class="results-header">
               <h3>{{ queryTitle }}</h3>
-              <button class="btn-export" @click="exportToCSV">
-                <i class="fas fa-file-export"></i> Exportar CSV
-              </button>
             </div>
             <div class="table-responsive">
               <table class="results-table">
@@ -143,9 +80,6 @@
           <div v-else-if="viewResults" class="query-results">
             <div class="results-header">
               <h3>{{ viewTitle }}</h3>
-              <button class="btn-export" @click="exportViewToCSV">
-                <i class="fas fa-file-export"></i> Exportar CSV
-              </button>
             </div>
             <div class="table-responsive">
               <table class="results-table">
@@ -169,43 +103,14 @@
         </div>
       </div>
     </div>
-
-    <!-- Notificaciones recientes -->
-    <div class="notifications-sidebar">
-      <div class="card">
-        <div class="card-header">
-          <h2>Notificaciones Recientes</h2>
-          <button class="btn-mark-all" @click="markAllAsRead">
-            <i class="fas fa-check-double"></i> Marcar todas como leídas
-          </button>
-        </div>
-        <div class="card-body">
-          <div v-if="notifications.length === 0" class="empty-notifications">
-            <i class="fas fa-bell-slash"></i>
-            <p>No hay notificaciones nuevas</p>
-          </div>
-          <ul v-else class="notifications-list">
-            <li v-for="notification in notifications" :key="notification.id" 
-                :class="{'unread': !notification.read}">
-              <div class="notification-icon" :class="notification.type">
-                <i :class="notification.icon"></i>
-              </div>
-              <div class="notification-content">
-                <p class="notification-text">{{ notification.text }}</p>
-                <span class="notification-time">{{ notification.time }}</span>
-              </div>
-              <button class="btn-dismiss" @click="dismissNotification(notification.id)">
-                <i class="fas fa-times"></i>
-              </button>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
+import pagoService from '@/services/pagoService'; // Asegúrate de importar tu servicio
+import detallePedidoService from '@/services/detallePedidoService'; // <-- importar nuevo servicio
+import repartidorService from '@/services/repartidorService';
+
 export default {
   name: 'AdminView',
   data() {
@@ -261,70 +166,61 @@ export default {
     fetchData() {
       this.lastUpdated = new Date().toLocaleTimeString()
     },
-    runQuery() {
-      this.queryLoading = true
-      this.queryResults = null
-      
-      setTimeout(() => {
-        switch(this.selectedQuery) {
-          case '1':
-            this.queryTitle = 'Cliente que más ha gastado en pedidos entregados'
-            this.queryHeaders = ['Cliente', 'Total gastado', 'N° de pedidos']
-            this.queryResults = [
-              ['Juan Pérez', '$1,250,000', 15],
-              ['María González', '$980,000', 12],
-              ['Carlos Rojas', '$875,000', 10]
-            ]
-            break
-          case '2':
-            this.queryTitle = 'Productos más pedidos por categoría (último mes)'
-            this.queryHeaders = ['Categoría', 'Producto', 'Cantidad']
-            this.queryResults = [
-              ['Documentos legales', 'Certificado de nacimiento', 45],
-              ['Documentos legales', 'Escritura de propiedad', 32],
-              ['Documentos académicos', 'Certificado de notas', 28]
-            ]
-            break
-          case '3':
-            this.queryTitle = 'Empresas con más entregas fallidas'
-            this.queryHeaders = ['Empresa', 'Entregas fallidas', 'Porcentaje']
-            this.queryResults = [
-              ['Envíos Rápidos SA', 8, '12%'],
-              ['Distribuidora Doc', 5, '8%'],
-              ['Mensajería Express', 3, '5%']
-            ]
-            break
-          case '4':
-            this.queryTitle = 'Tiempo promedio entre pedido y entrega por repartidor'
-            this.queryHeaders = ['Repartidor', 'Tiempo promedio', 'Pedidos completados']
-            this.queryResults = [
-              ['Pedro Sánchez', '2h 15m', 24],
-              ['Ana Martínez', '2h 30m', 18],
-              ['Luis Fernández', '2h 45m', 15]
-            ]
-            break
-          case '5':
-            this.queryTitle = 'Top 3 repartidores con mejor rendimiento'
-            this.queryHeaders = ['Repartidor', 'Puntuación', 'Entregas exitosas']
-            this.queryResults = [
-              ['María López', '4.9/5', 35],
-              ['Carlos Jiménez', '4.8/5', 32],
-              ['Laura Gómez', '4.7/5', 28]
-            ]
-            break
-          case '6':
-            this.queryTitle = 'Medios de pago en pedidos urgentes'
-            this.queryHeaders = ['Medio de pago', 'Cantidad', 'Porcentaje']
-            this.queryResults = [
-              ['Tarjeta de crédito', 65, '58%'],
-              ['Transferencia bancaria', 32, '28%'],
-              ['Efectivo', 15, '14%']
-            ]
-            break
+    async runQuery() {
+      this.queryLoading = true;
+      this.queryResults = null;
+      this.queryError = null;
+
+      try {
+        if (this.selectedQuery === '2') {
+          const response = await detallePedidoService.getMasPedidosPorCategoria();
+          console.log('Respuesta del backend:', response.data);
+
+          this.queryTitle = 'Productos más pedidos por categoría';
+          this.queryHeaders = ['Servicio', 'Categoría', 'Cantidad de pedidos'];
+
+          this.queryResults = response.data.map(item => [
+            item.servicio,
+            item.categoria,
+            item.cantidadPedidos
+          ]);
         }
-        this.queryLoading = false
-      }, 1500)
+        else if (this.selectedQuery === '5') { 
+          const response = await repartidorService.getTop3Repartidores();
+          console.log('Respuesta del backend:', response.data);
+
+          this.queryTitle = 'Top 3 Repartidores por Rendimiento';
+          this.queryHeaders = ['Nombre', 'Entregas Completadas', 'Puntuación Promedio', 'Rendimiento'];
+
+          this.queryResults = response.data.map(item => [
+            item.nombre, 
+            item.entregasCompletadas,
+            item.puntuacionPromedio.toFixed(2), 
+            item.rendimiento.toFixed(2) 
+          ]);
+        }
+        else if (this.selectedQuery === '6') {
+          const { data } = await pagoService.getMedioPagoMasUsadoUrgentes();
+          console.log('Respuesta del backend:', data);
+
+          this.queryTitle = 'Medio de pago más usado en pedidos urgentes';
+          this.queryHeaders = ['Medio de pago', 'Cantidad de veces usado'];
+
+          this.queryResults = Array.isArray(data) ? data : [data];
+          this.queryResults = this.queryResults.map(item => [
+            item.nombremetododepago,
+            item.cantidad
+          ]);
+        }
+      } catch (error) {
+        console.error('Error al obtener los datos:', error);
+        this.queryError = 'Hubo un problema al cargar los datos. Intenta de nuevo más tarde.';
+      } finally {
+        this.queryLoading = false;
+      }
     },
+
+
     loadView() {
       this.viewLoading = true
       this.viewResults = null
@@ -337,66 +233,45 @@ export default {
             this.viewResults = [
               ['Ana Vargas', '$1,450,000', 18, '2023-05-15'],
               ['Luis Méndez', '$1,200,000', 15, '2023-05-14'],
-              ['Carlota Ruiz', '$980,000', 12, '2023-05-10'],
-              ['Pedro Soto', '$875,000', 10, '2023-05-08']
-            ]
-            break
+              ['Carlota Ruiz', '$980,000', 12, '2023-05-10']
+            ];
+            break;
           case '14':
             this.viewTitle = 'Desempeño por repartidor'
-            this.viewHeaders = ['Repartidor', 'Entregas completadas', 'Tiempo promedio', 'Calificación']
+            this.viewHeaders = ['Repartidor', 'Pedidos entregados', 'Retrasos']
             this.viewResults = [
-              ['María López', 45, '2h 10m', '4.9/5'],
-              ['Carlos Jiménez', 38, '2h 25m', '4.7/5'],
-              ['Laura Gómez', 32, '2h 30m', '4.6/5'],
-              ['Juan Pérez', 28, '2h 45m', '4.5/5']
-            ]
-            break
+              ['Juan Pérez', 50, 2],
+              ['Carla Torres', 45, 1],
+              ['Pedro López', 60, 0]
+            ];
+            break;
           case '15':
-            this.viewTitle = 'Empresas con mayor volumen de documentos'
-            this.viewHeaders = ['Empresa', 'Documentos entregados', 'Clientes atendidos', 'Tasa de éxito']
+            this.viewTitle = 'Empresas con mayor volumen'
+            this.viewHeaders = ['Empresa', 'Volumen total', 'Pedidos procesados']
             this.viewResults = [
-              ['Envíos Express', 1250, 85, '98%'],
-              ['Mensajería Rápida', 980, 72, '96%'],
-              ['Distribuidora Doc', 750, 65, '95%'],
-              ['Entregas Seguras', 620, 58, '94%']
-            ]
-            break
+              ['Empresa A', '$5,000,000', 100],
+              ['Empresa B', '$4,200,000', 95],
+              ['Empresa C', '$3,600,000', 90]
+            ];
+            break;
         }
         this.viewLoading = false
-      }, 1200)
-    },
-    exportToCSV() {
-      console.log('Exportando consulta a CSV...')
-    },
-    exportViewToCSV() {
-      console.log('Exportando vista a CSV...')
-    },
-    markAllAsRead() {
-      this.notifications = this.notifications.map(n => ({ ...n, read: true }))
+      }, 1000)
     },
     dismissNotification(id) {
-      this.notifications = this.notifications.filter(n => n.id !== id)
-    }
-  },
-  mounted() {
-    this.fetchData()
+      this.notifications = this.notifications.filter(notification => notification.id !== id);
+    },  
   }
 }
 </script>
-
 <style scoped>
 .admin-dashboard {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  grid-template-rows: auto 1fr;
-  grid-gap: 20px;
   padding: 20px;
   min-height: 100vh;
   background-color: #f5f7fa;
 }
 
 .admin-header {
-  grid-column: 1 / -1;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -404,17 +279,18 @@ export default {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
 }
 
 .header-left h1 {
   margin: 0;
   font-size: 24px;
-  color: #333;
+  color: #2c3e50;
 }
 
 .welcome-message {
   margin: 5px 0 0;
-  color: #666;
+  color: #7f8c8d;
   font-size: 14px;
 }
 
@@ -426,7 +302,7 @@ export default {
 
 .refresh-btn {
   padding: 8px 15px;
-  background: #3F51B5;
+  background: #3498db;
   color: white;
   border: none;
   border-radius: 4px;
@@ -435,90 +311,56 @@ export default {
   align-items: center;
   gap: 8px;
   font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.refresh-btn:hover {
+  background: #2980b9;
 }
 
 .last-updated {
   font-size: 13px;
-  color: #777;
+  color: #7f8c8d;
 }
-
-.quick-stats {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-
-.stat-card {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.stat-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 15px;
-  color: white;
-  font-size: 20px;
-}
-
-.bg-primary { background: #3F51B5; }
-.bg-success { background: #4CAF50; }
-.bg-warning { background: #FFC107; }
-.bg-danger { background: #F44336; }
-
-.stat-info h3 {
-  margin: 0 0 5px;
-  font-size: 14px;
-  color: #666;
-}
-
-.stat-value {
-  margin: 0;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-}
-
-.stat-change {
-  margin: 5px 0 0;
-  font-size: 12px;
-}
-
-.stat-change.positive { color: #4CAF50; }
-.stat-change.negative { color: #F44336; }
 
 .main-content {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 20px;
+}
+
+@media (min-width: 1200px) {
+  .main-content {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .card {
   background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
 }
 
 .card-header {
   padding: 15px 20px;
   border-bottom: 1px solid #eee;
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 10px;
 }
 
 .card-header h2 {
   margin: 0;
   font-size: 18px;
+  color: #2c3e50;
+  flex-grow: 1;
 }
 
 .card-body {
@@ -529,20 +371,28 @@ export default {
   padding: 8px 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  margin: 0 10px;
+  background-color: #f8f9fa;
+  font-size: 14px;
+  min-width: 200px;
 }
 
 .btn-run-query {
   padding: 8px 15px;
-  background: #3F51B5;
+  background: #2ecc71;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.btn-run-query:hover {
+  background: #27ae60;
 }
 
 .btn-run-query:disabled {
-  background: #ccc;
+  background: #bdc3c7;
   cursor: not-allowed;
 }
 
@@ -551,49 +401,40 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 40px;
-  color: #666;
+  color: #7f8c8d;
   gap: 10px;
 }
 
 .empty-state {
   text-align: center;
   padding: 40px;
-  color: #999;
+  color: #bdc3c7;
 }
 
 .empty-state i {
   font-size: 40px;
   margin-bottom: 15px;
-  color: #ddd;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
 }
 
 .results-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 15px;
 }
 
 .results-header h3 {
   margin: 0;
   font-size: 16px;
-}
-
-.btn-export {
-  padding: 6px 12px;
-  background: transparent;
-  border: 1px solid #3F51B5;
-  color: #3F51B5;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 13px;
+  color: #2c3e50;
 }
 
 .table-responsive {
   overflow-x: auto;
+  border-radius: 6px;
+  border: 1px solid #eee;
 }
 
 .results-table {
@@ -608,140 +449,16 @@ export default {
 }
 
 .results-table th {
-  background: #f9f9f9;
-  font-weight: 500;
-  color: #555;
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #34495e;
 }
 
 .results-table tr:hover td {
-  background: #f5f5f5;
+  background: #f5f7fa;
 }
 
-.stats-section .card-body {
-  padding: 20px;
+.results-table tr:last-child td {
+  border-bottom: none;
 }
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.stat-item {
-  background: #f9f9f9;
-  padding: 15px;
-  border-radius: 6px;
-}
-
-.stat-item h3 {
-  margin-top: 0;
-  color: #555;
-  font-size: 16px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
-}
-
-.stats-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.stats-list li {
-  padding: 8px 0;
-  display: flex;
-  justify-content: space-between;
-}
-
-.stat-label {
-  font-weight: 500;
-  color: #666;
-}
-
-.notifications-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.notifications-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.notifications-list li {
-  display: flex;
-  padding: 12px 0;
-  border-bottom: 1px solid #eee;
-  align-items: flex-start;
-}
-
-.notifications-list li.unread {
-  background: #f8f9ff;
-}
-
-.notification-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 12px;
-  color: white;
-  flex-shrink: 0;
-}
-
-.notification-icon.warning { background: #FFC107; }
-.notification-icon.success { background: #4CAF50; }
-.notification-icon.info { background: #2196F3; }
-
-.notification-content {
-  flex-grow: 1;
-}
-
-.notification-text {
-  margin: 0;
-  font-size: 14px;
-}
-
-.notification-time {
-  display: block;
-  font-size: 12px;
-  color: #999;
-  margin-top: 3px;
-}
-
-.btn-dismiss {
-  background: none;
-  border: none;
-  color: #999;
-  cursor: pointer;
-  margin-left: 10px;
-}
-
-.empty-notifications {
-  text-align: center;
-  padding: 40px;
-  color: #999;
-}
-
-.empty-notifications i {
-  font-size: 40px;
-  margin-bottom: 15px;
-  color: #ddd;
-}
-
-.btn-mark-all {
-  background: none;
-  border: none;
-  color: #3F51B5;
-  cursor: pointer;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
 </style>
