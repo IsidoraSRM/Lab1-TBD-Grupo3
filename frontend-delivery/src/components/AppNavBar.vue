@@ -32,20 +32,23 @@ export default {
 
 <template>
     <nav>
-        <router-link to="/" class="title">
+        <router-link 
+            :to="isLoggedIn && userRole === 'CLIENTE' ? '/homeClient' : '/'" 
+            class="title"
+        >
             <img src="@/assets/DocDelivery.png" alt="Logo" class="nav-logo">
             DocDelivery
         </router-link>
+        
         <div class="menu" @click="toggleMenu">
             <span></span>
             <span></span>
             <span></span>   
         </div>
+        
         <ul :class="{ open: menuOpen }">
-            
             <!-- Opciones para cliente -->
             <template v-if="isLoggedIn && userRole === 'CLIENTE'">
-
                 <li>
                     <router-link to="/homeClient" active-class="active">Inicio</router-link>
                 </li>

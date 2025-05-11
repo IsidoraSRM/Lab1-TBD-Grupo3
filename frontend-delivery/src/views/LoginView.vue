@@ -220,13 +220,14 @@ export default {
     },
     
     redirectBasedOnRole(role) {
-      // Aquí puedes personalizar la redirección según los roles
       if (role === 'ADMIN') {
         this.$router.push('/admin');
       } else if (role === 'TRABAJADOR') {
         this.$router.push('/trabajador');
+      } else if (role === 'CLIENTE') {
+        this.$router.push('/homeClient');  // Cambiado de '/' a '/homeClient'
       } else {
-        // Para usuarios normales
+        // Por defecto (opcional)
         this.$router.push('/');
       }
     },

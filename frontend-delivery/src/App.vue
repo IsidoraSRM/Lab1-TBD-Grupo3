@@ -32,7 +32,6 @@ html, body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  overflow: hidden; /* Evita el scroll en el body */
 }
 
 /* Opcional: para personalizar la barra de desplazamiento */
@@ -65,7 +64,6 @@ html, body {
   display: flex;
   flex-direction: column;
   padding-top: 20px;
-  overflow: hidden; /* Evita el scroll en el body */
 }
 .main-content {
   flex: 1; /* Hace que este contenedor ocupe todo el espacio disponible */
