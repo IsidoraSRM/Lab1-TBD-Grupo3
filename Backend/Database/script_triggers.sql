@@ -59,5 +59,5 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER trigger_calificacion_automatica
 AFTER UPDATE ON orderentity
 FOR EACH ROW
-WHEN (NEW.fechahoraentrega IS NOT NULL)
+WHEN (NEW.fechapedido IS NOT NULL)
 EXECUTE FUNCTION insertar_calificacion_automatica();
