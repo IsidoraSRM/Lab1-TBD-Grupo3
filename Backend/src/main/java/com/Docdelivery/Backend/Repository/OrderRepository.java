@@ -38,8 +38,12 @@ public class OrderRepository {
             OrderEntity order = new OrderEntity();
             order.setIdPedido(rs.getLong("idpedido"));
             order.setClienteId(rs.getLong("cliente_id"));
-            order.setRepartidorId(rs.getObject("repartidor_id", Long.class)); // Puede ser null
+            Long repartidorId = rs.getObject("repartidor_id") != null ? rs.getLong("repartidor_id") : null;
+            order.setRepartidorId(repartidorId);
             order.setFechaPedido(rs.getTimestamp("fechapedido").toLocalDateTime());
+            Timestamp fechaEntrega = rs.getTimestamp("fechaEntrega");
+            order.setFechaEntrega(fechaEntrega != null ? fechaEntrega.toLocalDateTime() : null);
+
             order.setEstadoPedido(rs.getString("estadopedido"));
             order.setPrioridadPedido(rs.getString("prioridadpedido"));
             return order;
