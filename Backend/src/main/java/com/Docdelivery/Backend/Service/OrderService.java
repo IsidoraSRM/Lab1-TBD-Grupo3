@@ -70,6 +70,10 @@ public class OrderService {
     public int confirmarPedido(int idPedido) {
         return orderRepository.confirmarPedido(idPedido);
     }
-    
+
+
+    public List<OrderEntity> getAllOrders() {
+        return orderRepository.findAll();
+    }
 
 }

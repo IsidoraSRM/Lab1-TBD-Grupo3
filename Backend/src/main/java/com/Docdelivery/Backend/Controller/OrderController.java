@@ -139,6 +139,14 @@ public class OrderController {
         }
     }
 
+    // llamr a todas las ordenes
+    @GetMapping("/all")
+    @Secured({"ROLE_CLIENTE", "ROLE_ADMIN", "ROLE_TRABAJADOR"})
+    public ResponseEntity<List<OrderEntity>> getAllOrders() {
+        List<OrderEntity> orders = orderService.getAllOrders();
+        return ResponseEntity.ok(orders);
+    }
+
 
 
 }
