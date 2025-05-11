@@ -2,6 +2,7 @@ package com.Docdelivery.Backend.Repository;
 
 
 import com.Docdelivery.Backend.Entity.ClienteEntity;
+import com.Docdelivery.Backend.dto.ClienteConTotalGastadoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -54,34 +55,39 @@ public class  ClienteRepository {
         return jdbcTemplate.query(sql, new ClienteRowMapper());
     }
 
-    //consulta numero 1
-    public Optional<ClienteEntity> obtenerClienteQueMasHaGastado() {
+
+    public Optional<ClienteConTotalGastadoDTO> obtenerClienteQueMasHaGastado() {
         String sql = """ 
-        SELECT 
-            c.cliente_id,
-            c.nombre,
-            c.email,
-            SUM(p.monto) AS total_gastado
-        FROM OrderEntity o
-        JOIN Pago p ON o.idPedido = p.idPedido
-        JOIN Cliente c ON o.cliente_id = c.cliente_id
-        WHERE o.estadoPedido = 'Entregado'
-        GROUP BY c.cliente_id, c.nombre, c.email
-        ORDER BY total_gastado DESC
-        LIMIT 1
-        """;
+    SELECT 
+        c.cliente_id,
+        c.nombre,
+        c.email,
+        c.direccion,
+        c.telefono,
+        SUM(p.monto) AS total_gastado
+    FROM OrderEntity o
+    JOIN Pago p ON o.idPedido = p.idPedido
+    JOIN Cliente c ON o.cliente_id = c.cliente_id
+    WHERE o.estadoPedido = 'ENTREGADO'
+    GROUP BY c.cliente_id, c.nombre, c.email, c.direccion, c.telefono
+    ORDER BY total_gastado DESC
+    LIMIT 1
+    """;
 
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new ClienteEntity(
+            // Se crea el DTO para retornar
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new ClienteConTotalGastadoDTO(
                     rs.getLong("cliente_id"),
                     rs.getString("nombre"),
-                    rs.getString("direccion"),
                     rs.getString("email"),
-                    rs.getString("telefono")
+                    rs.getString("direccion"),
+                    rs.getString("telefono"),
+                    rs.getDouble("total_gastado") // Mapeamos total_gastado
             )));
         } catch (Exception e) {
             return Optional.empty();
         }
     }
+
 
 }

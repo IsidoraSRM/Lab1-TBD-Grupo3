@@ -107,9 +107,10 @@
 </template>
 
 <script>
-import pagoService from '@/services/pagoService'; // Asegúrate de importar tu servicio
-import detallePedidoService from '@/services/detallePedidoService'; // <-- importar nuevo servicio
+import pagoService from '@/services/pagoService'; 
+import detallePedidoService from '@/services/detallePedidoService'; 
 import repartidorService from '@/services/repartidorService';
+import clienteService from '@/services/clienteService';
 
 export default {
   name: 'AdminView',
@@ -172,7 +173,25 @@ export default {
       this.queryError = null;
 
       try {
-        if (this.selectedQuery === '2') {
+        if (this.selectedQuery === '1') { // Cliente que más ha gastado
+          const response = await clienteService.getClienteQueMasHaGastado();
+          console.log('Respuesta del backend:', response.data);
+
+          this.queryTitle = 'Cliente que más ha gastado';
+          this.queryHeaders = ['Nombre', 'Email', 'Total Gastado'];
+
+          // Maneja el Optional de Java (puede ser null)
+          if (response.data) {
+            this.queryResults = [[
+              response.data.nombre,
+              response.data.email,
+              `$${response.data.totalGastado.toLocaleString('es-CL')}` // Formato chileno
+            ]];
+          } else {
+            this.queryResults = [['No se encontraron datos', '', '']];
+          }
+        }
+        else if (this.selectedQuery === '2') {
           const response = await detallePedidoService.getMasPedidosPorCategoria();
           console.log('Respuesta del backend:', response.data);
 
@@ -219,8 +238,7 @@ export default {
         this.queryLoading = false;
       }
     },
-
-
+    
     loadView() {
       this.viewLoading = true
       this.viewResults = null
