@@ -98,4 +98,14 @@ public class OrderService {
             return Collections.emptyList();
         }
     }
+    
+    // Listar las empresas asociadas con más entregas fallidas
+    public List<Map<String, Object>> getEntregasFallidasPorEmpresa() {
+        return orderRepository.getEntregasFallidasPorEmpresa();
+    }
+
+    // Calcular el tiempo promedio entre pedido y entrega por repartidor
+    public List<Map<String, Object>> getTiempoPromedioEntregaPorRepartidor() {
+        return orderRepository.getTiempoPromedioEntregaPorRepartidor();
+    }
 }

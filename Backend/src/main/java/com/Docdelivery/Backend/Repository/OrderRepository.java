@@ -172,7 +172,6 @@ public class OrderRepository {
         }
     }
 
-    //Obtener pedido con cliente y detallePedido 
     //Obtener pedido con cliente y detallePedido por idRepartidor
     public List<Map<String, Object>> getPedidosConClienteYDetalleByRepartidorId(Long repartidorId) {
         String sql = "SELECT o.*, c.*, dp.* " +
@@ -189,6 +188,43 @@ public class OrderRepository {
             return Collections.emptyList();
         }
     }
+
+
+    // Listar las empresas asociadas con más entregas fallidas
+    public List<Map<String, Object>> getEntregasFallidasPorEmpresa() {
+        String sql = "SELECT ea.nombreEmpresa, COUNT(*) AS entregas_fallidas " +
+                "FROM OrderEntity o " +
+                "JOIN EmpresaAsociada ea ON o.idEmpresaAsociada = ea.idEmpresaAsociada " +
+                "WHERE o.estadoPedido ILIKE 'FALLIDO'  " +
+                "GROUP BY ea.nombreEmpresa " +
+                "ORDER BY entregas_fallidas DESC";
+
+        try {
+            return jdbcTemplate.queryForList(sql);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    // Calcular el tiempo promedio entre pedido y entrega por repartidor
+    public List<Map<String, Object>> getTiempoPromedioEntregaPorRepartidor() {
+        String sql = "SELECT r.nombre AS nombre_repartidor, " +
+                "       ROUND(AVG(EXTRACT(EPOCH FROM (o.fechaEntrega - o.fechaPedido)) / 60)) AS tiempo_promedio_minutos " +
+                "FROM OrderEntity o " +
+                "JOIN repartidor r ON o.repartidor_id = r.repartidor_id " +
+                "WHERE o.fechaEntrega IS NOT NULL AND o.fechaPedido IS NOT NULL " +
+                "GROUP BY r.nombre " +
+                "ORDER BY tiempo_promedio_minutos";
+
+        try {
+            return jdbcTemplate.queryForList(sql);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
 }
 
 

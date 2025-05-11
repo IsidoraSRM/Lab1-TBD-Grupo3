@@ -21,6 +21,7 @@ import com.Docdelivery.Backend.Entity.DetallePedidoEntity;
 import com.Docdelivery.Backend.Entity.OrderEntity;
 import com.Docdelivery.Backend.Service.OrderService;
 import com.Docdelivery.Backend.dto.CrearPedidoDto;
+import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/pedidos")
@@ -147,11 +148,47 @@ public class OrderController {
         List<OrderEntity> orders = orderService.getAllOrders();
         return ResponseEntity.ok(orders);
     }
+
     // Obtener todos los pedidos por repartidor
     @GetMapping("/repartidor/{repartidorId}")
     @Secured({"ROLE_CLIENTE", "ROLE_ADMIN", "ROLE_TRABAJADOR"})
     public ResponseEntity<List<Map<String, Object>>> getPedidosByRepartidor(@PathVariable Long repartidorId) {
         List<Map<String, Object>> pedidos = orderService.getOrdersByRepartidorId(repartidorId);
         return ResponseEntity.ok(pedidos);
+    }
+
+    // Listar las empresas asociadas con más entregas fallidas
+    @GetMapping("/entregas-fallidas-por-empresa")
+    @Secured({"ROLE_CLIENTE", "ROLE_ADMIN", "ROLE_TRABAJADOR"})
+    public ResponseEntity<List<Map<String, Object>>> getEntregasFallidasPorEmpresa() {
+        try {
+            List<Map<String, Object>> entregasFallidas = orderService.getEntregasFallidasPorEmpresa();
+            if (entregasFallidas.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(entregasFallidas);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.emptyList());
+        }
+    }
+
+    // Calcular el tiempo promedio entre pedido y entrega por repartidor
+    @GetMapping("/tiempo-promedio-entrega-por-repartidor")
+    @Secured({"ROLE_CLIENTE", "ROLE_ADMIN", "ROLE_TRABAJADOR"})
+    public ResponseEntity<List<Map<String, Object>>> getTiempoPromedioEntregaPorRepartidor() {
+        try {
+            List<Map<String, Object>> tiempoPromedio = orderService.getTiempoPromedioEntregaPorRepartidor();
+            if (tiempoPromedio.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(tiempoPromedio);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.emptyList());
+        }
     }
 }
