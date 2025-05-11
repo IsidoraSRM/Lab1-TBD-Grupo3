@@ -113,9 +113,14 @@ public class OrderController {
             @RequestParam("estado") String nuevoEstado) {
 
         try {
+            // Validación adicional del estado
+            if (!List.of("Pendiente", "En proceso", "Entregado", "Cancelado").contains(nuevoEstado)) {
+                return ResponseEntity.badRequest().body("Estado no válido");
+            }
+
             orderService.cambiarEstadoPedido(idPedido, nuevoEstado);
             return ResponseEntity.ok("Estado del pedido actualizado correctamente.");
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al cambiar el estado del pedido: " + e.getMessage());
         }
@@ -153,6 +158,4 @@ public class OrderController {
         List<Map<String, Object>> pedidos = orderService.getOrdersByRepartidorId(repartidorId);
         return ResponseEntity.ok(pedidos);
     }
-
-
 }

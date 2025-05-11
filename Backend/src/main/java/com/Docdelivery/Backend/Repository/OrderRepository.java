@@ -2,11 +2,7 @@ package com.Docdelivery.Backend.Repository;
 
 import com.Docdelivery.Backend.Entity.OrderEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.CallableStatementCallback;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.SqlOutParameter;
-import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
@@ -135,10 +131,18 @@ public class OrderRepository {
         }
     }
     //Procedimiento para actualizar el estado de los pedidos
-    public void cambiarEstadoPedido(Long pedidoId, String nuevoEstado) {
-        String sql = "CALL cambiar_estado_pedido(?, ?)";
-        jdbcTemplate.update(sql, pedidoId, nuevoEstado);
+    public void cambiarEstadoPedido(Long idPedido, String nuevoEstado) {
+        jdbcTemplate.execute(
+                "CALL cambiar_estado_pedido(?, ?)",
+                (PreparedStatementCallback<Boolean>) ps -> {
+                    ps.setLong(1, idPedido);
+                    ps.setString(2, nuevoEstado);
+                    return ps.execute();
+                }
+        );
     }
+
+
     
     //Procedure confirmarPedido
     public int confirmarPedido(int idPedido) {

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,8 +69,13 @@ public class OrderService {
     }
 
     //Procedure-> cambiarEstadoPedido
-    public  void  cambiarEstadoPedido(Long idPedido, String nuevoEstado) {
-        orderRepository.cambiarEstadoPedido(idPedido, nuevoEstado);
+    @Transactional
+    public void cambiarEstadoPedido(Long idPedido, String nuevoEstado) {
+        try {
+            orderRepository.cambiarEstadoPedido(idPedido, nuevoEstado);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Error al cambiar estado del pedido: " + e.getMostSpecificCause().getMessage());
+        }
     }
     
     //Procedure confirmarPedido
