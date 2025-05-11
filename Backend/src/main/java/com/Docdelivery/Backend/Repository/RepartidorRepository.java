@@ -3,6 +3,7 @@ package com.Docdelivery.Backend.Repository;
 
 import com.Docdelivery.Backend.Entity.RepartidorEntity;
 import com.Docdelivery.Backend.dto.TopRepartidorDto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,7 +11,9 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -54,7 +57,37 @@ public class RepartidorRepository {
         return jdbcTemplate.query(sql, new RepartidorRowMapper());
     }
 
-    public List<TopRepartidorDto> findTop3ByRendimiento() {
+
+    // obtener repartidor por idUsuario
+    public Optional<Long> findRepartidorIdByUsuarioId(Long usuarioId) {
+    String sql = "SELECT r.repartidor_id " +
+                 "FROM repartidor r " +
+                 "JOIN usuarios u ON u.name_param = r.nombre AND u.phone = r.telefono " +
+                 "WHERE u.id_usuario = ?";
+    
+    try {
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, Long.class, usuarioId));
+    } catch (Exception e) {
+        return Optional.empty();
+    }
+}
+
+    public List<Map<String, Object>> getPedidosConClienteYDetalleByRepartidorId(Long repartidorId) {
+        String sql = "SELECT o.*, c.*, dp.* " +
+                    "FROM OrderEntity o " +
+                    "JOIN cliente c ON o.cliente_id = c.cliente_id " +
+                    "JOIN detallepedido dp ON o.idpedido = dp.idpedido " +
+                    "WHERE o.repartidor_id = ? " +
+                    "ORDER BY o.fechapedido DESC";
+        
+        try {
+            return jdbcTemplate.queryForList(sql, repartidorId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+     public List<TopRepartidorDto> findTop3ByRendimiento() {
         String sql = "SELECT r.repartidor_id, r.nombre, r.telefono, r.disponible, " +
                 "COUNT(o.idPedido) as entregas_completadas, " +
                 "COALESCE(AVG(rt.score), 0) as puntuacion_promedio, " +
@@ -80,5 +113,8 @@ public class RepartidorRepository {
         dto.setRendimiento(rs.getDouble("rendimiento"));
         return dto;
     };
+
+
+
 
 }

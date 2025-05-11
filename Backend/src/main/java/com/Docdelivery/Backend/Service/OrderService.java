@@ -1,7 +1,9 @@
 package com.Docdelivery.Backend.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.Docdelivery.Backend.Entity.DetallePedidoEntity;
 import com.Docdelivery.Backend.Entity.OrderEntity;
+import com.Docdelivery.Backend.Entity.RepartidorEntity;
 import com.Docdelivery.Backend.Repository.DetallePedidoRepository;
 import com.Docdelivery.Backend.Repository.OrderRepository;
+import com.Docdelivery.Backend.Repository.RepartidorRepository;
 import com.Docdelivery.Backend.dto.CrearPedidoDto;
 
 @Service
@@ -23,6 +27,8 @@ public class OrderService {
 
     @Autowired
     private DetallePedidoRepository detallePedidoRepository;
+    @Autowired
+    private RepartidorRepository repartidorRepository;
 
     @Transactional
     public Long crearPedido(CrearPedidoDto pedidoDto) {
@@ -75,5 +81,20 @@ public class OrderService {
     public List<OrderEntity> getAllOrders() {
         return orderRepository.findAll();
     }
-
+    // filepath: c:\Users\Public\Desktop\Lab1-TBD-Grupo3\Backend\src\main\java\com\Docdelivery\Backend\Service\OrderService.java
+    public List<Map<String, Object>> getOrdersByRepartidorId(Long idUsuario) {
+        Optional<Long> repartidorId = repartidorRepository.findRepartidorIdByUsuarioId(idUsuario);
+        
+        System.out.println("ID Usuario: " + idUsuario);
+        System.out.println("Repartidor encontrado: " + repartidorId.isPresent());
+        if (repartidorId.isPresent()) {
+            System.out.println("ID Repartidor: " + repartidorId.get());
+            List<Map<String, Object>> result = orderRepository.getPedidosConClienteYDetalleByRepartidorId(repartidorId.get());
+            System.out.println("Número de pedidos encontrados: " + result.size());
+            return result;
+        } else {
+            System.out.println("No se encontró un repartidor para este usuario");
+            return Collections.emptyList();
+        }
+    }
 }

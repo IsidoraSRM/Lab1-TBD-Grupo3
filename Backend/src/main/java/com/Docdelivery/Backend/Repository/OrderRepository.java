@@ -142,29 +142,47 @@ public class OrderRepository {
     
     //Procedure confirmarPedido
     public int confirmarPedido(int idPedido) {
-    String query = "CALL confirmar_pedido(?)";
-    
-    try {
-        jdbcTemplate.execute(
-            query,
-            (CallableStatementCallback<Integer>) cs -> {
-                // parametro de entrada
-                cs.setInt(1, idPedido);
-                
-                // ejecutar el procedimiento
-                cs.execute();
-                
-                
-                return 1;
-            }
-        );
-        return 1; // bien
-    } catch (Exception e) {
-        e.printStackTrace();
-        System.out.println("Error al confirmar pedido: " + e.getMessage());
-        return -1; // Error
+        String query = "CALL confirmar_pedido(?)";
+        
+        try {
+            jdbcTemplate.execute(
+                query,
+                (CallableStatementCallback<Integer>) cs -> {
+                    // parametro de entrada
+                    cs.setInt(1, idPedido);
+                    
+                    // ejecutar el procedimiento
+                    cs.execute();
+                    
+                    
+                    return 1;
+                }
+            );
+            return 1; // bien
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error al confirmar pedido: " + e.getMessage());
+            return -1; // Error
+        }
     }
-}
+
+    //Obtener pedido con cliente y detallePedido 
+    //Obtener pedido con cliente y detallePedido por idRepartidor
+    public List<Map<String, Object>> getPedidosConClienteYDetalleByRepartidorId(Long repartidorId) {
+        String sql = "SELECT o.*, c.*, dp.* " +
+                    "FROM OrderEntity o " +
+                    "JOIN cliente c ON o.cliente_id = c.cliente_id " +
+                    "JOIN detallepedido dp ON o.idpedido = dp.idpedido " +
+                    "WHERE o.repartidor_id = ? " +
+                    "ORDER BY o.fechapedido DESC";
+        
+        try {
+            return jdbcTemplate.queryForList(sql, repartidorId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
 
 
 }

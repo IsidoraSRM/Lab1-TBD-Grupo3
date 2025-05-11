@@ -3,12 +3,25 @@
       <h1>Panel de Trabajador</h1>
       <p>Bienvenido al panel de trabajador</p>
       <!-- Contenido del panel de trabajador -->
+    <OrderList 
+      viewMode="repartidor" 
+      :repartidorId="currentRepartidorId" 
+    />
     </div>
   </template>
   
   <script>
+  import OrderList from '../components/OrderList.vue';
   export default {
-    name: 'TrabajadorView'
+    name: 'TrabajadorView',
+    components: {
+      OrderList
+    },
+    data() {
+      return {
+        currentRepartidorId: 3 // Este valor debería venir de tu sistema de autenticación
+      };
+    }
   }
   </script>
   

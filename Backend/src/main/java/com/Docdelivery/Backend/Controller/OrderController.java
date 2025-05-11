@@ -146,7 +146,13 @@ public class OrderController {
         List<OrderEntity> orders = orderService.getAllOrders();
         return ResponseEntity.ok(orders);
     }
-
+    // Obtener todos los pedidos por repartidor
+    @GetMapping("/repartidor/{repartidorId}")
+    @Secured({"ROLE_CLIENTE", "ROLE_ADMIN", "ROLE_TRABAJADOR"})
+    public ResponseEntity<List<Map<String, Object>>> getPedidosByRepartidor(@PathVariable Long repartidorId) {
+        List<Map<String, Object>> pedidos = orderService.getOrdersByRepartidorId(repartidorId);
+        return ResponseEntity.ok(pedidos);
+    }
 
 
 }
