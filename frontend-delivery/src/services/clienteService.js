@@ -16,5 +16,12 @@ export default {
         'Authorization': `Bearer ${localStorage.getItem('authToken')}` // Requiere autenticación ADMIN
       }
     });
-  }    
+  },
+  getclienteByUserId(userId) {
+    return axios.get(`${API_URL}/${userId}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('authToken')}` 
+      }
+    });
+  }     
 };

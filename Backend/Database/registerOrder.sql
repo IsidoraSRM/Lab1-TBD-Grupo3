@@ -36,7 +36,6 @@ BEGIN
     -- 2. Asignar repartidor disponible (el que tenga menos pedidos pendientes)
     SELECT r.repartidor_id INTO v_repartidor_id
     FROM Repartidor r
-    WHERE r.disponible = TRUE
     ORDER BY (
                  SELECT COUNT(*)
                  FROM OrderEntity o

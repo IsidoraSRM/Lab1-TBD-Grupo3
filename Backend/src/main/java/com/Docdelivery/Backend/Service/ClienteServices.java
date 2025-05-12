@@ -15,4 +15,7 @@ public class ClienteServices {
     //consulta numero 1
     public Optional<ClienteConTotalGastadoDTO> obtenerClienteMasAGastado() {return clienteRepository.obtenerClienteQueMasHaGastado();}
 
+
+    //cliente por idUsuario
+    public Optional<Long> findClienteIdByUsuarioId(Long usuarioId) {return clienteRepository.findClienteIdByUsuarioId(usuarioId);}
 }

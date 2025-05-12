@@ -88,6 +88,19 @@ public class  ClienteRepository {
             return Optional.empty();
         }
     }
+    //obtener cliente por idUusuario
+    public Optional<Long> findClienteIdByUsuarioId(Long usuarioId) {
+        String sql = "SELECT c.cliente_id " +
+                "FROM cliente c " +
+                "JOIN usuarios u ON u.name_param = c.nombre AND u.phone = c.telefono " +
+                "WHERE u.id_usuario = ?";
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, Long.class, usuarioId));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
 
 
 }

@@ -5,6 +5,7 @@ import com.Docdelivery.Backend.dto.ClienteConTotalGastadoDTO; // Asegúrate de i
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
@@ -25,5 +26,10 @@ public class ClienteController {
         } catch (Exception e) {
             return Optional.empty();
         }
+    }
+    @GetMapping("/{usuarioId}")
+    @Secured({"ROLE_CLIENTE", "ROLE_ADMIN", "ROLE_TRABAJADOR"})
+    public Object findClienteIdByUsuarioId(@PathVariable Long usuarioId) {
+        return clienteServices.findClienteIdByUsuarioId(usuarioId);
     }
 }
