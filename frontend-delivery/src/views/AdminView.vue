@@ -81,6 +81,7 @@
       <!-- Caso específico para Desempeño por repartidor -->
       <RepartidorPerformanceTable v-else-if="selectedView === '14'" />
       <ClientSummary v-else-if="selectedView === '13'" />
+      <TopCompany v-else-if="selectedView === '15'" />
       <!-- Otras vistas -->
       <div v-else-if="viewResults" class="query-results">
         <div class="results-header">
@@ -118,11 +119,13 @@ import repartidorService from '@/services/repartidorService';
 import clienteService from '@/services/clienteService';
 import RepartidorPerformanceTable from '@/components/PerformanceDist.vue';
 import ClientSummary from '@/components/ClientSummary.vue';
+import TopCompany from '@/components/TopCompany.vue';
 export default {
   name: 'AdminView',
   components: {
     RepartidorPerformanceTable,
-    ClientSummary
+    ClientSummary,
+    TopCompany
   },
   data() {
     return {
@@ -255,6 +258,10 @@ export default {
         return;
       }
       if(this.selectedView === '13'){
+        return;
+
+      }
+      if(this.selectedView === '15'){
         return;
 
       }
