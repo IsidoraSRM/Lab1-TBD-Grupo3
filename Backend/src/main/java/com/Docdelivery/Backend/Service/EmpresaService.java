@@ -17,27 +17,27 @@ public class EmpresaService {
         this.empresaRepository = empresaRepository;
     }
 
-    // 🔹 Obtener empresas con ranking 1
+    // Obtener empresas con ranking 1
     public List<VistaEmpresaDto> obtenerEmpresasConRanking1() {
         return empresaRepository.obtenerEmpresasConRanking1();
     }
 
-    // 📄 Obtener todas las empresas con paginación
+    // Obtener todas las empresas con paginación
     public List<EmpresaAsociadaEntity> findAll(int limit, int offset) {
         return empresaRepository.findAll(limit, offset);
     }
 
-    // 🔍 Buscar empresa por ID
+    // Buscar empresa por ID
     public Optional<EmpresaAsociadaEntity> findById(Long id) {
         return empresaRepository.findById(id);
     }
 
-    // 📝 Crear o actualizar empresa
+    // Crear o actualizar empresa
     public void save(EmpresaAsociadaEntity empresa) {
         empresaRepository.save(empresa);
     }
 
-    // ❌ Eliminar empresa por ID
+    // Eliminar empresa por ID
     public void deleteById(Long id) {
         empresaRepository.deleteById(id);
     }

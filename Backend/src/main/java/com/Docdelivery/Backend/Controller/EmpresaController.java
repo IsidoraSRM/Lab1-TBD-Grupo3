@@ -33,14 +33,14 @@ public class EmpresaController {
         return empresaService.findById(id);
     }
 
-    // 📝 Crear nueva empresa
+    // Crear nueva empresa
     @PostMapping
     @Secured({"ROLE_ADMIN"})
     public void crearEmpresa(@RequestBody EmpresaAsociadaEntity empresa) {
         empresaService.save(empresa);
     }
 
-    // 📝 Actualizar empresa existente
+    // Actualizar empresa existente
     @PutMapping("/{id}")
     @Secured({"ROLE_ADMIN"})
     public void actualizarEmpresa(@PathVariable Long id, @RequestBody EmpresaAsociadaEntity empresa) {
@@ -48,7 +48,7 @@ public class EmpresaController {
         empresaService.save(empresa);
     }
 
-    // ❌ Eliminar empresa por ID
+    // Eliminar empresa por ID
     @DeleteMapping("/{id}")
     @Secured({"ROLE_ADMIN"})
     public void eliminarEmpresa(@PathVariable Long id) {

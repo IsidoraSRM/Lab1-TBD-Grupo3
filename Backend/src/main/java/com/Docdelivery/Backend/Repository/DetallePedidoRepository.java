@@ -37,6 +37,26 @@ public class DetallePedidoRepository {
         jdbcTemplate.update(sql, detalle.getIdPedido(), detalle.getIdServicio(), detalle.getCantidad());
     }
 
+    // Read
+    public List<DetallePedidoEntity> findAll() {
+        String sql = "SELECT * FROM DetallePedido";
+        return jdbcTemplate.query(sql, new DetallePedidoRowMapper());
+    }
+
+    // Update
+    public void update(DetallePedidoEntity detalle) {
+        String sql = "UPDATE DetallePedido SET cantidad = ? WHERE idDetallePedido = ?";
+        jdbcTemplate.update(sql, detalle.getCantidad(), detalle.getIdDetallePedido());
+    }
+
+    // Delete
+    public boolean deleteById(Long id) {
+        String sql = "DELETE FROM DetallePedido WHERE idDetallePedido = ?";
+        int rowsAffected = jdbcTemplate.update(sql, id);
+        return rowsAffected > 0;
+    }
+
+
     // Obtener detalles por ID de pedido
     public List<DetallePedidoEntity> findByPedidoId(Long idPedido) {
         String sql = "SELECT * FROM DetallePedido WHERE idPedido = ?";
