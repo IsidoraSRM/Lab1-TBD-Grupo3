@@ -126,6 +126,22 @@ public class RepartidorRepository {
         ));
     }
 
+    public boolean update(RepartidorEntity repartidor) {
+        String sql = "UPDATE repartidor SET nombre = ?, telefono = ?, disponible = ? WHERE repartidor_id = ?";
+        int rowsAffected = jdbcTemplate.update(sql,
+                repartidor.getNombre(),
+                repartidor.getTelefono(),
+                repartidor.getDisponible(),
+                repartidor.getRepartidorId()
+        );
+        return rowsAffected > 0;
+    }
+
+    public boolean deleteById(Long id) {
+        String sql = "DELETE FROM repartidor WHERE repartidor_id = ?";
+        int rowsAffected = jdbcTemplate.update(sql, id);
+        return rowsAffected > 0;
+    }
 
 
 
