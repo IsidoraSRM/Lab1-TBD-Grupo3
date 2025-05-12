@@ -29,7 +29,7 @@
         </div>
         <h3>¡Pedido creado correctamente!</h3>
         <p>Su pedido ha sido registrado con éxito.</p>
-        <router-link to="/" class="create-button">Volver al inicio</router-link>
+        <router-link to="/homeClient" class="create-button">Volver al inicio</router-link>
       </div>
     </div>
     <div v-else class="create-card">
@@ -38,7 +38,7 @@
         <p class="subtitle">Complete el formulario para solicitar su servicio</p>
       </div>
       
-      <form @submit.prevent="createOrder">
+      <form @submit.prevent="createOrder">homeClient
         <!-- Progreso -->
         <div class="progress-bar">
           <div class="progress-step active">
