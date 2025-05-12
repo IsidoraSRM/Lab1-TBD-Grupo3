@@ -44,7 +44,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="service-category">Categoría</label>
+                    <label for="service-category">Tipo de Servicio</label>
                     <select 
                         id="service-category" 
                         v-model="orderData.categoria"

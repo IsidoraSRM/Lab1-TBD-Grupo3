@@ -23,8 +23,8 @@
             <option value="" disabled>Seleccione una consulta</option>
             <option value="1">Cliente que más ha gastado</option>
             <option value="2">Productos más pedidos por categoría</option>
-            <option value="3">Empresas con más entregas fallidas</option>
-            <option value="4">Tiempo promedio por repartidor</option>
+            <option value="3">Listar las empresas asociadas con más entregas fallidas.</option>
+            <option value="4">Calcular el tiempo promedio entre pedido y entrega por repartidor.</option>
             <option value="5">Obtener los 3 repartidores con mejor rendimiento (basado en entregas y puntuación).</option>
             <option value="6">Obtener el medio de pago más usado en pedidos urgentes</option>
           </select>
@@ -120,6 +120,10 @@ import clienteService from '@/services/clienteService';
 import RepartidorPerformanceTable from '@/components/PerformanceDist.vue';
 import ClientSummary from '@/components/ClientSummary.vue';
 import TopCompany from '@/components/TopCompany.vue';
+import orderService from '@/services/orderService';
+import empresaService from '@/services/empresaService';
+
+
 export default {
   name: 'AdminView',
   components: {
@@ -205,6 +209,7 @@ export default {
             this.queryResults = [['No se encontraron datos', '', '']];
           }
         }
+
         else if (this.selectedQuery === '2') {
           const response = await detallePedidoService.getMasPedidosPorCategoria();
           console.log('Respuesta del backend:', response.data);
@@ -218,6 +223,46 @@ export default {
             item.cantidadPedidos
           ]);
         }
+
+        else if (this.selectedQuery === '3') { 
+          const response = await empresaService.getEmpresaConMasEntregasFallidas();
+          console.log('Respuesta del backend:', response.data);
+
+          this.queryTitle = 'Empresas con más entregas fallidas';
+          this.queryHeaders = ['Empresa', 'Entregas Fallidas'];
+
+          this.queryResults = response.data.map(item => [
+            item.nombreempresa || 'Empresa no identificada',
+            item.entregas_fallidas || 0
+          ]);
+          
+          this.queryResults.sort((a, b) => b[1] - a[1]);
+        }
+
+
+
+
+        else if (this.selectedQuery === '4') { // Tiempo promedio por repartidor
+          const response = await orderService.getTiempoPromedioEntregaPorRepartidor();
+          console.log('Respuesta del backend:', response.data);
+
+          this.queryTitle = 'Tiempo promedio de entrega por repartidor';
+          this.queryHeaders = ['Repartidor', 'Tiempo Promedio'];
+
+          // Función para formatear el tiempo (maneja valores negativos)
+          const formatTime = (minutes) => {
+            const absMinutes = Math.abs(minutes);
+            const hours = Math.floor(absMinutes / 60);
+            const mins = Math.floor(absMinutes % 60);
+            return `${hours}h ${mins}m` + (minutes < 0 ? ' (valor negativo)' : '');
+          };
+
+          this.queryResults = response.data.map(item => [
+            item.nombre_repartidor || 'Nombre no disponible',
+            formatTime(item.tiempo_promedio_minutos)
+          ]);
+        }
+
         else if (this.selectedQuery === '5') { 
           const response = await repartidorService.getTop3Repartidores();
           console.log('Respuesta del backend:', response.data);
@@ -307,6 +352,7 @@ export default {
   }
 }
 </script>
+
 <style scoped>
 .admin-dashboard {
   padding: 20px;

@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/pedidos';
+const API_URL = 'http://localhost:8080/orders';
+
+const API_URL2 = 'http://localhost:8080/api/pedidos'
 
 const orderService = {
   
@@ -10,13 +12,21 @@ const orderService = {
     });
   },
 
+  getTiempoPromedioEntregaPorRepartidor() {
+    return axios.get(`${API_URL2}/tiempo-promedio-entrega-por-repartidor`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+  },
+
   
   getPedidoById(id) {
     return axios.get(`${API_URL}/${id}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
     });
   },
-
 
   registerOrder(orderData) {
     const params = new URLSearchParams({
@@ -42,13 +52,11 @@ const orderService = {
   });
   },
 
-
   confirmarPedido(idPedido) {
     return axios.post(`${API_URL}/confirmar/${idPedido}`, null, {
       headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
     });
   },
-
 
   getAllOrders() {
     return axios.get(`${API_URL}/all`, {

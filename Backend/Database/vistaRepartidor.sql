@@ -6,5 +6,5 @@ SELECT r.nombre AS repartidor,
 FROM repartidor r
 JOIN OrderEntity o ON r.repartidor_id = o.repartidor_id
 LEFT JOIN Rating rt ON o.idPedido = rt.idPedido
-WHERE o.estadoPedido = 'entregado'
+WHERE o.estadoPedido = 'ENTREGADO'
 GROUP BY r.nombre;

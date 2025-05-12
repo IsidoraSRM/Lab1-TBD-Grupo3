@@ -56,20 +56,31 @@ html, body {
 }
 
 #app {
-  background-color:#E2DCD2 ;
+  background-color: #E2DCD2;
   min-height: 100vh;
-  height: 100vh;
-  width:100%;
+  width: 100%;
   font-family: Arial, sans-serif;
   display: flex;
   flex-direction: column;
   padding-top: 20px;
 }
+
+
 .main-content {
   flex: 1; /* Hace que este contenedor ocupe todo el espacio disponible */
   overflow: auto;
   padding-top: 20px; /* Espacio para el navbar fijo */
   padding-bottom: 110px; /* Espacio para el footer fijo */
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 60px; /* ajusta según la altura real de tu footer */
+  background-color: #125A6C;
+  color: white;
+  z-index: 100;
 }
 
 /*
