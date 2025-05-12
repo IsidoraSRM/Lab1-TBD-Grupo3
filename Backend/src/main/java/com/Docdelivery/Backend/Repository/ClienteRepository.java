@@ -101,6 +101,20 @@ public class  ClienteRepository {
             return Optional.empty();
         }
     }
+    //funcuionalidad para actualizar un cliente
+    public void update(ClienteEntity cliente) {
+        String sql = "UPDATE cliente SET nombre = ?, direccion = ?, email = ?, telefono = ? WHERE cliente_id = ?";
+        jdbcTemplate.update(sql,
+                cliente.getNombre(),
+                cliente.getDireccion(),
+                cliente.getEmail(),
+                cliente.getTelefono(),
+                cliente.getClienteId());
+    }
 
+    public void removeCliente(Long id) {
+        String sql = "DELETE FROM cliente WHERE cliente_id = ?";
+        jdbcTemplate.update(sql, id);
+    }
 
 }
