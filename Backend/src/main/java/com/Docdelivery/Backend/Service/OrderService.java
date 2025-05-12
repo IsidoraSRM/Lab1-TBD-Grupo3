@@ -82,6 +82,8 @@ public class OrderService {
     public List<OrderEntity> getAllOrders() {
         return orderRepository.findAll();
     }
+
+
     // filepath: c:\Users\Public\Desktop\Lab1-TBD-Grupo3\Backend\src\main\java\com\Docdelivery\Backend\Service\OrderService.java
     public List<Map<String, Object>> getOrdersByRepartidorId(Long idUsuario) {
         Optional<Long> repartidorId = repartidorRepository.findRepartidorIdByUsuarioId(idUsuario);
@@ -108,4 +110,15 @@ public class OrderService {
     public List<Map<String, Object>> getTiempoPromedioEntregaPorRepartidor() {
         return orderRepository.getTiempoPromedioEntregaPorRepartidor();
     }
+
+    public List<OrderEntity> getPedidosByClienteId(Long clienteId) {
+        return orderRepository.findByClienteId(clienteId);
+    }
+
+    // Si quieres incluir los detalles
+    public List<Map<String, Object>> getPedidosConDetallesByClienteId(Long clienteId) {
+        return orderRepository.getPedidosConDetallesByClienteId(clienteId);
+    }
+
+
 }

@@ -191,4 +191,13 @@ public class OrderController {
                     .body(Collections.emptyList());
         }
     }
+
+    @GetMapping("/cliente/{clienteId}")
+    @Secured({"ROLE_CLIENTE", "ROLE_ADMIN"})
+    public ResponseEntity<List<OrderEntity>> getPedidosSimpleByClienteId(@PathVariable Long clienteId) {
+        List<OrderEntity> pedidos = orderService.getPedidosByClienteId(clienteId);
+        return ResponseEntity.ok(pedidos);
+    }
+
+
 }

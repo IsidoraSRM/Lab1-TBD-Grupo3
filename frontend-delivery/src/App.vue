@@ -31,7 +31,7 @@ html, body {
   background-color: #E2DCD2; /* Gris cálido */
   margin: 0;
   padding: 0;
-  min-height: 100vh;
+  height: 100%;
 }
 
 /* Opcional: para personalizar la barra de desplazamiento */
@@ -57,7 +57,7 @@ html, body {
 
 #app {
   background-color: #E2DCD2;
-  min-height: 100vh;
+  height: 100%;
   width: 100%;
   font-family: Arial, sans-serif;
   display: flex;
@@ -71,13 +71,14 @@ html, body {
   overflow: auto;
   padding-top: 20px; /* Espacio para el navbar fijo */
   padding-bottom: 110px; /* Espacio para el footer fijo */
+  height: 100%;
 }
 
 footer {
   position: fixed;
   bottom: 0;
   width: 100%;
-  height: 60px; /* ajusta según la altura real de tu footer */
+  height: 20px; /* ajusta según la altura real de tu footer */
   background-color: #125A6C;
   color: white;
   z-index: 100;

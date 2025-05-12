@@ -1,40 +1,47 @@
 <script>
+import orderService from '@/services/orderService';
+
 export default {
     name: 'HomeView',
     data() {
         return {
-            userName: 'Juan Pérez',
-            activeOrders: 2,
-            recentOrders: [
-                { id: '10025', date: '12/05/2024', type: 'Contrato', status: 'Entregado', statusColor: 'success' },
-                { id: '10026', date: '14/05/2024', type: 'Factura', status: 'En camino', statusColor: 'warning' },
-                { id: '10027', date: '15/05/2024', type: 'Certificado', status: 'Procesando', statusColor: 'info' }
-            ],
+            userName: 'Cargando...',
+            activeOrders: 0,
+            recentOrders: [],
             filterStatus: 'all',
-            searchQuery: ''
+            searchQuery: '',
+            loading: false,
+            error: null
         }
     },
     computed: {
         filteredOrders() {
             let orders = this.recentOrders;
             
-            // Filtrar por estado
             if (this.filterStatus !== 'all') {
                 orders = orders.filter(order => {
                     if (this.filterStatus === 'active') {
-                        return order.status !== 'Entregado';
+                        return order.estadoPedido !== 'ENTREGADO' && 
+                               order.estadoPedido !== 'FALLIDO' && 
+                               order.estadoPedido !== 'CANCELADO';
                     } else {
-                        return order.status === this.filterStatus;
+                        const statusMap = {
+                            'ENTREGADO': 'Entregado',
+                            'EN_CAMINO': 'En camino',
+                            'PROCESANDO': 'Procesando',
+                            'FALLIDO': 'Fallido',
+                            'CANCELADO': 'Cancelado'
+                        };
+                        return statusMap[order.estadoPedido] === this.filterStatus;
                     }
                 });
             }
             
-            // Filtrar por búsqueda
             if (this.searchQuery) {
                 const query = this.searchQuery.toLowerCase();
                 orders = orders.filter(order => 
-                    order.id.toLowerCase().includes(query) || 
-                    order.type.toLowerCase().includes(query)
+                    order.idPedido.toString().toLowerCase().includes(query) || 
+                    order.prioridadPedido.toLowerCase().includes(query)
                 );
             }
             
@@ -43,19 +50,147 @@ export default {
     },
     methods: {
         getStatusClass(status) {
-            return {
-                'success': status === 'Entregado',
-                'warning': status === 'En camino',
-                'info': status === 'Procesando',
-                'danger': status === 'Cancelado'
+            const statusMap = {
+                'ENTREGADO': 'success',
+                'EN_CAMINO': 'warning',
+                'PENDIENTE_CON': 'info',
+                'PENDIENTE': 'info',
+                'CONFIRMADO': 'info',
+                'PROCESANDO': 'info',
+                'FALLIDO': 'danger',
+                'CANCELADO': 'danger',
+                // Agrega cualquier otro estado que pueda aparecer
             };
+            return { [statusMap[status]]: true };
+        },
+        
+        formatStatus(status) {
+            const statusTranslations = {
+                'ENTREGADO': 'Entregado',
+                'EN_CAMINO': 'En camino',
+                'PENDIENTE_CON': 'Pendiente de confirmación',
+                'PENDIENTE': 'Pendiente',
+                'CONFIRMADO': 'Confirmado',
+                'PROCESANDO': 'Procesando',
+                'FALLIDO': 'Fallido',
+                'CANCELADO': 'Cancelado'
+            };
+            return statusTranslations[status] || status;
+        },
+        
+        
+        formatDate(dateString) {
+            if (!dateString) return '--';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-CL');
+        },
+        
+        startAutoRefresh() {
+            this.refreshInterval = setInterval(() => {
+                if (!this.loading) {
+                    this.loadUserData();
+                }
+            }, 30000); // Actualiza cada 30 segundos
+        },
+
+        // Método para extraer nombre amigable del email
+        extractNameFromEmail(email) {
+            if (!email) return 'Usuario';
+            const namePart = email.split('@')[0];
+            // Capitalizar primera letra
+            return namePart.charAt(0).toUpperCase() + namePart.slice(1);
+        },
+                
+        async loadUserData() {
+            this.loading = true;
+            this.error = null;
+            
+            try {
+                // 1. Verificación de autenticación básica
+                const authToken = localStorage.getItem('authToken');
+                if (!authToken) {
+                    throw new Error('No hay sesión activa');
+                }
+
+                // 2. Obtener información del usuario
+                const userEmail = localStorage.getItem('userEmail') || '';
+                this.userName = this.extractNameFromEmail(userEmail);
+                
+                // 3. Obtener ID del cliente con verificación
+                const clienteId = localStorage.getItem('userId');
+                console.log('ID de cliente obtenido:', clienteId);
+                
+                
+                if (!clienteId) {
+                    throw new Error('No se pudo identificar al cliente');
+                }
+
+                // 4. Obtener pedidos con prevención de caché
+                const timestamp = new Date().getTime();
+                const response = await orderService.getPedidosByClienteId(clienteId, timestamp);
+                
+                console.log('Datos de pedidos recibidos:', response.data);
+                
+                // 5. Procesar pedidos
+                this.recentOrders = response.data || [];
+                
+                // 6. Calcular pedidos activos (considerando todos los estados no finalizados)
+                this.activeOrders = this.recentOrders.filter(order => {
+                    const estado = order.estadoPedido;
+                    return !['ENTREGADO', 'FALLIDO', 'CANCELADO'].includes(estado);
+                }).length;
+                
+                // 7. Verificación de datos
+                if (this.recentOrders.length === 0) {
+                    console.warn('Se recibió una lista vacía de pedidos');
+                }
+                
+            } catch (error) {
+                console.error('Error completo:', error);
+                console.error('Error response:', error.response);
+                
+                this.error = error.response?.data?.message || 
+                            error.message || 
+                            'Error al cargar los pedidos. Intente nuevamente.';
+                this.userName = 'Cliente';
+                
+                // Opcional: Recargar después de un error
+                setTimeout(() => this.loadUserData(), 5000);
+            } finally {
+                this.loading = false;
+            }
         }
+        
+
+
+    },
+    created() {
+        this.loadUserData();
+        this.startAutoRefresh();
+        console.log("Estados encontrados en los pedidos:", 
+            this.recentOrders.map(order => order.estadoPedido));
+    },
+
+    activated() {
+        this.loadUserData();
     }
 }
 </script>
-
 <template>
     <div class="home-view">
+        <!-- Mensaje de carga/error -->
+        <div v-if="loading" class="loading-message">Cargando pedidos...</div>
+        <div v-if="error" class="error-message">{{ error }}</div>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-card card">
+                <h1>DocDelivery</h1>
+                <h2>Sistema de Gestión de Pedidos - Delivery de documentos</h2>
+                <p>Gestiona y realiza seguimiento a todos tus envíos de documentos de manera eficiente y segura.</p>
+            </div>
+        </section>
+
         <!-- Sección de Bienvenida -->
         <section class="welcome-section">
             <div class="welcome-card card">
@@ -64,7 +199,6 @@ export default {
                 
                 <div class="quick-actions">
                     <router-link to="/client" class="btn btn-primary">Nuevo Pedido</router-link>
-                    <router-link to="/order-history" class="btn btn-secondary">Ver Historial</router-link>
                 </div>
             </div>
         </section>
@@ -80,7 +214,7 @@ export default {
                             <input 
                                 type="text" 
                                 v-model="searchQuery" 
-                                placeholder="Buscar por número o tipo..."
+                                placeholder="Buscar por número o prioridad..."
                             >
                             <i class="fas fa-search"></i>
                         </div>
@@ -91,6 +225,7 @@ export default {
                             <option value="Entregado">Entregados</option>
                             <option value="En camino">En camino</option>
                             <option value="Procesando">Procesando</option>
+                            <option value="Fallido">Fallidos</option>
                         </select>
                     </div>
                 </div>
@@ -100,63 +235,29 @@ export default {
                         <thead>
                             <tr>
                                 <th># Pedido</th>
-                                <th>Fecha</th>
-                                <th>Tipo Documento</th>
+                                <th>Fecha Pedido</th>
+                                <th>Fecha Entrega</th>
+                                <th>Prioridad</th>
                                 <th>Estado</th>
-                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="order in filteredOrders" :key="order.id">
-                                <td>{{ order.id }}</td>
-                                <td>{{ order.date }}</td>
-                                <td>{{ order.type }}</td>
+                            <tr v-for="order in filteredOrders" :key="order.idPedido">
+                                <td>{{ order.idPedido }}</td>
+                                <td>{{ formatDate(order.fechaPedido) }}</td>
+                                <td>{{ formatDate(order.fechaEntrega) }}</td>
+                                <td>{{ order.prioridadPedido }}</td>
                                 <td>
-                                    <span class="status-badge" :class="getStatusClass(order.status)">
-                                        {{ order.status }}
+                                    <span class="status-badge" :class="getStatusClass(order.estadoPedido)">
+                                        {{ formatStatus(order.estadoPedido) }}
                                     </span>
-                                </td>
-                                <td>
-                                    <button class="btn-action" v-if="order.status === 'En camino'">
-                                        <i class="fas fa-truck"></i> Rastrear
-                                    </button>
-                                    <button class="btn-action">
-                                        <i class="fas fa-eye"></i> Ver Detalle
-                                    </button>
-                                </td>
+                                </td>   
                             </tr>
-                            <tr v-if="filteredOrders.length === 0">
-                                <td colspan="5" class="no-orders">No se encontraron pedidos</td>
+                            <tr v-if="filteredOrders.length === 0 && !loading">
+                                <td colspan="6" class="no-orders">No se encontraron pedidos</td>
                             </tr>
                         </tbody>
                     </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- Sección de Información Útil -->
-        <section class="useful-info">
-            <div class="info-cards">
-                <div class="info-card card">
-                    <div class="card-icon">
-                        <i class="fas fa-headset"></i>
-                    </div>
-                    <h4>¿Problemas con un pedido?</h4>
-                    <p>Nuestro equipo de soporte está disponible para ayudarte</p>
-                    <button class="btn btn-outline">
-                        <i class="fas fa-envelope"></i> Contactar
-                    </button>
-                </div>
-                
-                <div class="info-card card">
-                    <div class="card-icon">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <h4>Cómo preparar tus documentos</h4>
-                    <p>Guía completa para empaquetar y enviar tus documentos</p>
-                    <button class="btn btn-outline">
-                        <i class="fas fa-download"></i> Descargar PDF
-                    </button>
                 </div>
             </div>
         </section>
@@ -165,9 +266,9 @@ export default {
 
 <style scoped>
 .home-view {
-    padding: 20px;
     background-color: #F5F5F5;
     min-height: calc(100vh - 120px); /* Ajustar según tu navbar y footer */
+
 }
 
 /* Estilos para las tarjetas */
@@ -177,6 +278,35 @@ export default {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     padding: 20px;
     margin-bottom: 20px;
+}
+
+/* Hero Section */
+.hero-section {
+    margin-bottom: 30px;
+}
+
+.hero-card {
+    text-align: center;
+    background-color: #125A6C;
+    color: white;
+    width: 100%;
+}
+
+.hero-card h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.hero-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    font-weight: 400;
+}
+
+.hero-card p {
+    font-size: 1.1rem;
+    max-width: 700px;
+    margin: 0 auto;
 }
 
 /* Sección de Bienvenida */
@@ -360,49 +490,6 @@ export default {
     color: #777;
 }
 
-/* Sección de Información Útil */
-.useful-info {
-    margin-top: 30px;
-}
-
-.info-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.info-card {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100%;
-}
-
-.card-icon {
-    width: 60px;
-    height: 60px;
-    background-color: rgba(18, 90, 108, 0.1);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 15px;
-    color: #125A6C;
-    font-size: 24px;
-}
-
-.info-card h4 {
-    color: #125A6C;
-    margin-bottom: 10px;
-}
-
-.info-card p {
-    color: #666;
-    margin-bottom: 20px;
-    flex-grow: 1;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
     .section-header {
@@ -432,6 +519,14 @@ export default {
     .btn {
         width: 100%;
         justify-content: center;
+    }
+    
+    .hero-card h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-card h2 {
+        font-size: 1.2rem;
     }
 }
 </style>

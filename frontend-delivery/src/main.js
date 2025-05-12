@@ -7,10 +7,7 @@ import { authService } from './services/authService'
 // Import your view components
 import HomeView from './views/HomeView.vue'
 import HomeViewClient from './views/HomeViewClient.vue'
-
 import LoginView from './views/LoginView.vue'
-
-
 
 
 // Define your routes
@@ -22,7 +19,7 @@ const routes = [
   },
   {
     path: '/homeClient',
-    name: 'Home',
+    name: 'Homee',
     component: HomeViewClient
   },
   {

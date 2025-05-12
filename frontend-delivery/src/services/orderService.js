@@ -58,6 +58,24 @@ const orderService = {
     });
   },
 
+  getPedidosByClienteId(clienteId, cacheBuster = null) {
+      let url = `${API_URL2}/cliente/${clienteId}`;
+      if (cacheBuster) {
+          url += `?timestamp=${cacheBuster}`;
+      }
+      
+      return axios.get(url, {
+          headers: { 
+              Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+              'Content-Type': 'application/json'
+          },
+          transformResponse: [function (data) {
+              console.log("Datos crudos recibidos:", data);
+              return JSON.parse(data);
+          }]
+      });
+  },
+
   getAllOrders() {
     return axios.get(`${API_URL}/all`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }

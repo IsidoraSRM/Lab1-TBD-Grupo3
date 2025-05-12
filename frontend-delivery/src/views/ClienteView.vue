@@ -12,9 +12,7 @@
 <!-- Example: src/views/Home.vue -->
 <template>
     <div class="client">
-      <h1>cliente page</h1>
       <CreateOrder />
-      <!-- Your page content here -->
     </div>
   </template>
   

@@ -79,6 +79,29 @@ public class OrderRepository {
         }
     }
 
+
+    public List<OrderEntity> findByClienteId(Long clienteId) {
+        String sql = "SELECT * FROM OrderEntity WHERE cliente_id = ? ORDER BY fechaPedido DESC";
+        return jdbcTemplate.query(sql, new OrderRowMapper(), clienteId);
+    }
+
+    // Si necesitas más detalles (con joins a otras tablas)
+    public List<Map<String, Object>> getPedidosConDetallesByClienteId(Long clienteId) {
+        String sql = "SELECT o.*, dp.* " +
+                "FROM OrderEntity o " +
+                "JOIN detallepedido dp ON o.idpedido = dp.idpedido " +
+                "WHERE o.cliente_id = ? " +
+                "ORDER BY o.fechapedido DESC";
+
+        try {
+            return jdbcTemplate.queryForList(sql, clienteId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+
     // Buscar pedidos por repartidor
     public List<OrderEntity> findByRepartidorId(Long repartidorId) {
         String sql = "SELECT * FROM OrderEntity WHERE repartidor_id = ?";

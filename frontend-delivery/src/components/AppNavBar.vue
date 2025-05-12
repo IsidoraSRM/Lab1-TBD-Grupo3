@@ -53,10 +53,7 @@ export default {
                     <router-link to="/homeClient" active-class="active">Inicio</router-link>
                 </li>
                 <li>
-                    <router-link to="/client" active-class="active">Nuevo Pedido</router-link>
-                </li>
-                <li>
-                    <router-link to="/my-orders" active-class="active">Mis Pedidos</router-link>
+                    <router-link to="/client" active-class="active">Realizar un Pedido</router-link>
                 </li>
             </template>
 
@@ -72,17 +69,22 @@ export default {
 
             <!-- Menú usuario -->
             <template v-if="isLoggedIn">
-                <li>
-                    <router-link to="/profile" active-class="active">Mi Perfil</router-link>
-                </li>
+
                 <li>
                     <a href="#" @click.prevent="logout">Cerrar Sesión</a>
                 </li>
             </template>
 
+            
+            <li v-if="!isLoggedIn">
+                <router-link to="/" active-class="active">Inicio</router-link>
+            </li>
+            
             <li v-if="!isLoggedIn">
                 <router-link to="/login" active-class="active">Iniciar Sesión</router-link>
             </li>
+
+
         </ul>
     </nav>
 </template>
@@ -100,7 +102,8 @@ nav {
     width: 100%;
     z-index: 1000;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    padding: 0.5rem 1rem;
+    padding: 1rem 1rem;
+
 }
 
 .title {
@@ -122,7 +125,7 @@ ul {
     display: flex;
     gap: 0.5rem;
     margin: 0;
-    padding: 0;
+    padding-right: 20px;
     list-style: none;
 }
 
@@ -134,11 +137,6 @@ li a {
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     transition: background-color 0.3s;
-}
-
-.active {
-    background-color: #A3D9A5;
-    color: #125A6C;
 }
 
 li a:not(.active):hover {

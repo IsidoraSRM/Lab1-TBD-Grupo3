@@ -21,7 +21,7 @@
           <h2>Consultas Analíticas</h2>
           <select v-model="selectedQuery" class="query-select">
             <option value="" disabled>Seleccione una consulta</option>
-            <option value="1">Cliente que más ha gastado</option>
+            <option value="1">Cliente que más ha gastado en pedidos entregados.</option>
             <option value="2">Productos más pedidos por categoría</option>
             <option value="3">Listar las empresas asociadas con más entregas fallidas.</option>
             <option value="4">Calcular el tiempo promedio entre pedido y entrega por repartidor.</option>

@@ -168,6 +168,16 @@ export default {
         localStorage.setItem('userId', response.data.userId);
         localStorage.setItem('userRole', response.data.role);
         
+        
+          // Guardar el email para usarlo como nombre si es necesario
+        localStorage.setItem('userEmail', this.credentials.email);
+
+            // Si el backend devuelve el nombre en la respuesta, guárdalo
+        if (response.data.name) {
+          localStorage.setItem('userName', response.data.name);
+        }
+    
+        
         // Redireccionar según el rol
         this.redirectBasedOnRole(response.data.role);
         
