@@ -2,6 +2,7 @@ package com.Docdelivery.Backend.Controller;
 
 import com.Docdelivery.Backend.Entity.EmpresaAsociadaEntity;
 import com.Docdelivery.Backend.Service.EmpresaService;
+import com.Docdelivery.Backend.dto.VistaEmpresaDto;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,5 +54,12 @@ public class EmpresaController {
     @Secured({"ROLE_ADMIN"})
     public void eliminarEmpresa(@PathVariable Long id) {
         empresaService.deleteById(id);
+    }
+
+
+    @GetMapping("/top-ranking")
+    @Secured({"ROLE_CLIENTE", "ROLE_ADMIN"})
+    public List<VistaEmpresaDto> obtenerEmpresasConRanking1() {
+        return empresaService.obtenerEmpresasConRanking1();
     }
 }

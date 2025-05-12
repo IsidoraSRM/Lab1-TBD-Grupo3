@@ -41,19 +41,19 @@ const orderService = {
       direccionDestino: orderData.direccionDestino
     });
 
-    return axios.post(`${API_URL}/register?${params}`, null, {
+    return axios.post(`${API_URL2}/register?${params}`, null, {
       headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
     });
   },
 
   cambiarEstadoPedido(idPedido, estado) {
-  return axios.put(`${API_URL}/${idPedido}/estado?nuevoEstado=${estado}`, null, {
+  return axios.put(`${API_URL2}/${idPedido}/estado?nuevoEstado=${estado}`, null, {
     headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
   });
   },
 
   confirmarPedido(idPedido) {
-    return axios.post(`${API_URL}/confirmar/${idPedido}`, null, {
+    return axios.post(`${API_URL2}/confirmar/${idPedido}`, null, {
       headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
     });
   },
@@ -64,7 +64,7 @@ const orderService = {
     });
   },
   getPedidosByRepartidor(repartidorId) {
-    return axios.get(`${API_URL}/repartidor/${repartidorId}`, {
+    return axios.get(`${API_URL2}/repartidor/${repartidorId}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
     });
   },
